@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Sparkles } from "lucide-react";
-import { Mascot } from "./mascot";
 
 const TIPS = [
   "Small savings today = big wins later. You got this! 💪",
@@ -38,7 +37,7 @@ export function DailyTip() {
     <div className="bg-violet-50/50 dark:bg-violet-950/10 rounded-2xl p-5 border border-violet-100 dark:border-violet-900/30 flex items-center gap-4 shadow-sm mb-6">
       {/* Bouncing Mascot */}
       <div className="animate-bounce shrink-0">
-        <Mascot className="w-12 h-12" />
+        <Sparkles className="w-12 h-12 text-violet-500" />
       </div>
       
       <div>
