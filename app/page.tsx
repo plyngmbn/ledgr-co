@@ -25,7 +25,7 @@ export default function DashboardPage() {
             <h1 className="text-3xl font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">
               Welcome to Ledgr!
             </h1>
-            <p className="text-gray-500 font-light text-base">
+            <p className="text-gray-500 font-medium text-base">
               Bestie for your broke moments.
             </p>
           </div>
