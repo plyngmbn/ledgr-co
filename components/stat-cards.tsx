@@ -162,8 +162,8 @@ export function StatCards() {
         </div>
       </div>
 
-      {/* Current Month Stats - 4 cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Current Month Stats - 3 cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Spent this month */}
         <div className="bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950/30 dark:to-pink-950/30 rounded-2xl p-5 border border-red-100 dark:border-red-900/50">
           <div className="flex items-center justify-between mb-3">
@@ -194,16 +194,6 @@ export function StatCards() {
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             ~{formatCurrency(avgDailySpent)}/day avg
           </p>
-        </div>
-
-        {/* Avg Monthly Savings */}
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-2xl p-5 border border-purple-100 dark:border-purple-900/50">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Avg Monthly Savings</span>
-            <PiggyBank className="w-5 h-5 text-purple-400" />
-          </div>
-          <div className="text-2xl font-bold text-purple-500">{formatCurrency(avgMonthly)}</div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Across all months</p>
         </div>
       </div>
     </div>
