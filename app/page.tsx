@@ -25,13 +25,13 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Stats */}
-        <StatCards />
-
         {/* Daily Tip */}
         <div className="mt-6">
           <DailyTip />
         </div>
+
+        {/* Stats */}
+        <StatCards />
 
         {/* Streak */}
         <div className="mt-4">

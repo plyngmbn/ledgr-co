@@ -23,7 +23,6 @@ export function DailyTip() {
   const [tip, setTip] = useState("");
 
   useEffect(() => {
-    // Pick a tip based on the day so it changes daily
     const dayOfYear = Math.floor(
       (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
         (1000 * 60 * 60 * 24)
@@ -32,13 +31,18 @@ export function DailyTip() {
   }, []);
 
   return (
-    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-5 border border-emerald-100 flex items-center gap-4">
-      <Mascot className="w-12 h-12 shrink-0" />
+    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-2xl p-5 border border-emerald-100 dark:border-emerald-900/50 flex items-center gap-4 shadow-sm mb-6">
+      {/* BOUNCING LOGO HERE */}
+      <div className="animate-bounce">
+        <Mascot className="w-12 h-12 shrink-0" />
+      </div>
       <div>
-        <p className="text-xs font-semibold text-emerald-600 mb-1 flex items-center gap-1">
-          <Sparkles className="w-3 h-3" /> Daily Tip
+        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-1 flex items-center gap-1">
+          <Sparkles className="w-3 h-3" /> DAILY TIP
         </p>
-        <p className="text-sm text-gray-700 font-medium">{tip}</p>
+        <p className="text-sm text-gray-700 dark:text-gray-200 font-medium leading-tight">
+          {tip}
+        </p>
       </div>
     </div>
   );
