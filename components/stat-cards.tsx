@@ -107,7 +107,7 @@ export function StatCards() {
             <span className="text-sm font-bold text-red-600 dark:text-red-400">Total Spent ({currentYear})</span>
             <TrendingDown className="w-5 h-5 text-red-400" />
           </div>
-          <div className="text-2xl font-bold text-red-50">{formatCurrency(totalSpentYear)}</div>
+          <div className="text-2xl font-bold text-red-400">{formatCurrency(totalSpentYear)}</div>
           <p className="text-xs text-red-400/70 mt-1 font-medium">Synced from cloud</p>
         </div>
 
