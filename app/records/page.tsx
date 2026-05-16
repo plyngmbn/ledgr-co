@@ -41,10 +41,10 @@ export default function RecordsPage() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col items-center justify-center gap-4 mb-8 text-center">
-          <Mascot className="w-18 h-18" />
+          <Mascot className="w-24 h-24" />
           <div>
-            <h1 className="text-2xl font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">Add Records</h1>
-            <p className="text-gray-500">Your future self said thank you, btw</p>
+            <h1 className="text-3xl font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">Add Records</h1>
+            <p className="text-gray-500 font-medium text-lg">Your future self said thank you, btw</p>
           </div>
         </div>
 
