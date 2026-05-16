@@ -28,16 +28,15 @@ export function ExpensesByCategory() {
   const { data } = useBudget();
   
   const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth();
   
-  // Get spending for current month
-  const monthlySpending = data.spending.filter(
-    (r) => r.month === currentMonth && r.year === currentYear
+  // ✅ Get spending for the whole year instead of just current month
+  const yearlySpending = data.spending.filter(
+    (r) => r.year === currentYear
   );
   
   // Calculate totals by category
   const categoryTotals = CATEGORIES.map((category) => {
-    const total = monthlySpending
+    const total = yearlySpending
       .filter((r) => r.category === category)
       .reduce((sum, r) => sum + r.amount, 0);
     return { category, total };
@@ -54,11 +53,13 @@ export function ExpensesByCategory() {
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Expenses by Category</h3>
+      {/* ✅ Updated title to reflect whole year */}
+      <h3 className="text-lg font-semibold text-gray-800 mb-1">Expenses by Category</h3>
+      <p className="text-xs text-gray-400 mb-4">Whole year {currentYear}</p>
       
       {categoryTotals.length === 0 ? (
         <div className="text-center py-8 text-gray-400">
-          <p>No expenses recorded this month</p>
+          <p>No expenses recorded this year</p>
           <p className="text-sm mt-1">Add spending records to see breakdown</p>
         </div>
       ) : (
@@ -86,7 +87,7 @@ export function ExpensesByCategory() {
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-2">
                       <div
-                        className={`h-2 rounded-full transition-all duration-300 ${config.bg.replace('100', '400')}`}
+                        className="h-2 rounded-full transition-all duration-300"
                         style={{ 
                           width: `${percentage}%`,
                           backgroundColor: config.color.includes('orange') ? '#f97316' :
@@ -109,7 +110,7 @@ export function ExpensesByCategory() {
           
           {/* Total */}
           <div className="pt-3 mt-3 border-t border-gray-100 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-600">Total This Month</span>
+            <span className="text-sm font-medium text-gray-600">Total This Year</span>
             <span className="text-lg font-bold text-gray-800">{formatCurrency(grandTotal)}</span>
           </div>
         </div>
