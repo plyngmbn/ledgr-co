@@ -5,6 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { BudgetProvider } from '@/lib/budget-context'
 import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
+import Script from 'next/script' 
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -27,6 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`bg-[#f8faf9] ${pressStart2P.variable}`}>
+      <head>
+        {/* FIXED: Removed async={true} (shorthand is cleaner) and fixed crossOrigin casing */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8311594301846007"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body className="font-sans antialiased">
         <BudgetProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -34,13 +44,13 @@ export default function RootLayout({
           </ThemeProvider>
         </BudgetProvider>
 
-        {/* 2. ADD THE COMPONENT HERE */}
-        <Analytics />
-        <SpeedInsights /> 
-
-        {process.env.NODE_ENV === 'production' && <Analytics />}
-        <SpeedInsights />
-
+        {/* Cleaned up duplicates: only runs in production */}
+        {process.env.NODE_ENV === 'production' && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   )
