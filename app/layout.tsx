@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Press_Start_2P } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+// 1. ADD THIS IMPORT
+import { SpeedInsights } from "@vercel/speed-insights/next" 
 import { BudgetProvider } from '@/lib/budget-context'
 import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -15,20 +16,7 @@ export const metadata: Metadata = {
   description: 'Your friendly budget buddy to track spending and savings',
   generator: 'v0.app',
   icons: {
-    icon: [
-      {
-        url: '/logo.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/logo.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/logo.png',
-        type: 'image/svg+xml',
-      },
-    ],
+    icon: '/logo.png',
     apple: '/logo.png',
   },
 }
@@ -46,7 +34,9 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </BudgetProvider>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        {/* 2. ADD THE COMPONENT HERE */}
+        <Analytics />
+        <SpeedInsights /> 
       </body>
     </html>
   )
