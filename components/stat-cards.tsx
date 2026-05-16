@@ -108,7 +108,7 @@ export function StatCards() {
             <TrendingDown className="w-5 h-5 text-red-400" />
           </div>
           <div className="text-2xl font-bold text-red-400">{formatCurrency(totalSpentYear)}</div>
-          <p className="text-xs text-red-400/70 mt-1 font-medium">Synced from cloud</p>
+          <p className="text-xs text-red-400/70 mt-1 font-medium">This year so far</p>
         </div>
 
         {/* Total Saved - Green */}
@@ -118,7 +118,7 @@ export function StatCards() {
             <TrendingUp className="w-5 h-5 text-green-400" />
           </div>
           <div className="text-2xl font-bold text-green-500">{formatCurrency(totalSavedYear)}</div>
-          <p className="text-xs text-green-500/70 mt-1 font-medium">Synced from cloud</p>
+          <p className="text-xs text-green-500/70 mt-1 font-medium">This year so far</p>
         </div>
 
         {/* Savings Goal - Slate */}
