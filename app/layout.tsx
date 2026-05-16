@@ -1,12 +1,8 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Press_Start_2P } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-<<<<<<< HEAD
-// 1. ADD THIS IMPORT
 import { SpeedInsights } from "@vercel/speed-insights/next" 
-=======
 import { SpeedInsights } from '@vercel/speed-insights/next'
->>>>>>> c64149a5b29cb95d333e23e2cdc3d4a3a24259f2
 import { BudgetProvider } from '@/lib/budget-context'
 import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
@@ -38,14 +34,14 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </BudgetProvider>
-<<<<<<< HEAD
+
         {/* 2. ADD THE COMPONENT HERE */}
         <Analytics />
         <SpeedInsights /> 
-=======
+
         {process.env.NODE_ENV === 'production' && <Analytics />}
         <SpeedInsights />
->>>>>>> c64149a5b29cb95d333e23e2cdc3d4a3a24259f2
+
       </body>
     </html>
   )
