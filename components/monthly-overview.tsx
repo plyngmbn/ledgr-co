@@ -9,7 +9,7 @@ interface MonthlyStats {
   index: number;
   spending: number;
   savings: number;
-  avgPerDay: number;
+  average: number;
 }
 
 export function MonthlyOverview() {
@@ -40,14 +40,14 @@ export function MonthlyOverview() {
 
         // Calculate unique days logged for this specific month
         const uniqueDaysLogged = new Set(monthRecords.map((r) => r.date)).size;
-        const avgPerDay = uniqueDaysLogged > 0 ? spending / uniqueDaysLogged : 0;
+        const average = uniqueDaysLogged > 0 ? spending / uniqueDaysLogged : 0;
 
         return {
           month,
           index,
           spending,
           savings,
-          avgPerDay,
+          average,
         };
       });
 
@@ -116,9 +116,9 @@ export function MonthlyOverview() {
                   <div className="flex gap-3 font-medium">
                     <span className="text-red-500">{formatCurrency(m.spending)}</span>
                     <span className="text-emerald-500">{formatCurrency(m.savings)}</span>
-                    {m.avgPerDay > 0 && (
+                    {m.average > 0 && (
                       <span className="text-orange-400">
-                        ~{formatCurrency(m.avgPerDay)}/day
+                        ~{formatCurrency(m.average)}/day
                       </span>
                     )}
                   </div>
