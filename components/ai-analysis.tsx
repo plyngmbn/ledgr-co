@@ -22,7 +22,13 @@ export function AIAnalysis() {
       return (
         <p key={i} className={line === "" ? "mt-2" : ""}>
           {parts.map((part, j) =>
-            j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+            j % 2 === 1 ? (
+              <strong key={j} className="text-gray-900 dark:text-gray-100 font-bold">
+                {part}
+              </strong>
+            ) : (
+              part
+            )
           )}
         </p>
       );
@@ -81,16 +87,16 @@ export function AIAnalysis() {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-emerald-500" />
-          <h2 className="text-lg font-semibold text-gray-800">AI Budget Analysis</h2>
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">AI Budget Analysis</h2>
         </div>
         <button
           onClick={analyzeSpending}
           disabled={isAnalyzing}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${isAnalyzing ? "animate-spin" : ""}`} />
           Analyze
@@ -99,11 +105,11 @@ export function AIAnalysis() {
 
       <div className="min-h-[100px] flex items-center justify-center">
         {analysis ? (
-          <div className="w-full text-gray-600 text-sm space-y-1">
+          <div className="w-full text-gray-600 dark:text-gray-400 text-sm space-y-1">
             {renderMarkdown(analysis)}
           </div>
         ) : (
-          <div className="text-center text-gray-400">
+          <div className="text-center text-gray-400 dark:text-gray-600">
             <Sparkles className="w-12 h-12 mx-auto mb-3 opacity-30" />
             <p className="text-sm">
               Click &quot;Analyze&quot; to get personalized insights about your spending habits and a

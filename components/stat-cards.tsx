@@ -38,7 +38,6 @@ export function StatCards() {
       );
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
       const currentDay = new Date().getDate();
-      const daysRemaining = daysInMonth - currentDay;
 
       if (monthlySpending.length === 0) {
         if (yearlyGoal) {
@@ -67,45 +66,45 @@ export function StatCards() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       {/* Total Spent */}
-      <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-5 border border-red-100">
+      <div className="bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950/30 dark:to-pink-950/30 rounded-2xl p-5 border border-red-100 dark:border-red-900/50">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-700">Total Spent ({currentYear})</span>
-          <TrendingDown className="w-5 h-5 text-red-400" />
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Total Spent ({currentYear})</span>
+          <TrendingDown className="w-5 h-5 text-red-400 dark:text-red-500" />
         </div>
-        <div className="text-2xl font-bold text-red-500">{formatCurrency(totalSpent)}</div>
-        <p className="text-xs text-gray-500 mt-1">This year so far</p>
+        <div className="text-2xl font-bold text-red-500 dark:text-red-400">{formatCurrency(totalSpent)}</div>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This year so far</p>
       </div>
 
       {/* Total Saved */}
-      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-100">
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 rounded-2xl p-5 border border-green-100 dark:border-green-900/50">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-700">Total Saved ({currentYear})</span>
-          <TrendingUp className="w-5 h-5 text-green-400" />
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Total Saved ({currentYear})</span>
+          <TrendingUp className="w-5 h-5 text-green-400 dark:text-green-500" />
         </div>
-        <div className="text-2xl font-bold text-green-500">{formatCurrency(totalSaved)}</div>
-        <p className="text-xs text-gray-500 mt-1">This year so far</p>
+        <div className="text-2xl font-bold text-green-500 dark:text-green-400">{formatCurrency(totalSaved)}</div>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This year so far</p>
       </div>
 
       {/* Avg Monthly Savings */}
-      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-5 border border-purple-100">
+      <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-2xl p-5 border border-purple-100 dark:border-purple-900/50">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-700">Avg Monthly Savings</span>
-          <PiggyBank className="w-5 h-5 text-purple-400" />
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Avg Monthly Savings</span>
+          <PiggyBank className="w-5 h-5 text-purple-400 dark:text-purple-500" />
         </div>
-        <div className="text-2xl font-bold text-purple-500">{formatCurrency(avgMonthly)}</div>
-        <p className="text-xs text-gray-500 mt-1">Across all months</p>
+        <div className="text-2xl font-bold text-purple-500 dark:text-purple-400">{formatCurrency(avgMonthly)}</div>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Across all months</p>
       </div>
 
       {/* Yearly Goal */}
-      <div className="bg-gradient-to-br from-gray-50 to-slate-50 rounded-2xl p-5 border border-gray-200">
+      <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900 dark:to-slate-900 rounded-2xl p-5 border border-gray-200 dark:border-gray-800">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-700">{currentYear} Savings Goal</span>
-          <Target className="w-5 h-5 text-gray-400" />
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{currentYear} Savings Goal</span>
+          <Target className="w-5 h-5 text-gray-400 dark:text-gray-500" />
         </div>
         {yearlyGoal !== null ? (
           <>
-            <div className="text-2xl font-bold text-gray-700">{formatCurrency(yearlyGoal)}</div>
-            <p className="text-xs text-gray-500 mt-1">
+            <div className="text-2xl font-bold text-gray-700 dark:text-gray-200">{formatCurrency(yearlyGoal)}</div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               {totalSaved >= yearlyGoal
                 ? "Goal reached!"
                 : `${formatCurrency(yearlyGoal - totalSaved)} to go`}
@@ -113,36 +112,36 @@ export function StatCards() {
           </>
         ) : (
           <>
-            <div className="text-xl font-semibold text-gray-500">No goal set</div>
-            <p className="text-xs text-gray-500 mt-1">Set a yearly savings goal in Records</p>
+            <div className="text-xl font-semibold text-gray-500 dark:text-gray-400">No goal set</div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Set a yearly savings goal in Records</p>
           </>
         )}
       </div>
 
       {/* AI Recommended Budget */}
-      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-5 border border-amber-100">
+      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/30 rounded-2xl p-5 border border-amber-100 dark:border-amber-900/50">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-700">AI Daily Budget</span>
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">AI Daily Budget</span>
           <button
             onClick={analyzeAndRecommend}
             disabled={isAnalyzing}
-            className="p-1 hover:bg-amber-100 rounded-full transition-colors disabled:opacity-50"
+            className="p-1 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-full transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`w-4 h-4 text-amber-500 ${isAnalyzing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-4 h-4 text-amber-500 dark:text-amber-400 ${isAnalyzing ? "animate-spin" : ""}`} />
           </button>
         </div>
         {recommendedBudget !== null ? (
           <>
-            <div className="text-2xl font-bold text-amber-600">{formatCurrency(recommendedBudget)}</div>
-            <p className="text-xs text-gray-500 mt-1">Recommended per day</p>
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{formatCurrency(recommendedBudget)}</div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended per day</p>
           </>
         ) : (
           <>
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-400" />
-              <span className="text-sm font-medium text-amber-600">Get AI advice</span>
+              <Sparkles className="w-5 h-5 text-amber-400 dark:text-amber-500" />
+              <span className="text-sm font-medium text-amber-600 dark:text-amber-400">Get AI advice</span>
             </div>
-            <p className="text-xs text-gray-500 mt-2">Click refresh to analyze</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Click refresh to analyze</p>
           </>
         )}
       </div>
