@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Sparkles, RefreshCw } from "lucide-react";
 import { useBudget } from "@/lib/budget-context";
-import { CATEGORIES } from "@/lib/types";
 
 export function AIAnalysis() {
   const [analysis, setAnalysis] = useState<string | null>(null);
@@ -15,6 +14,20 @@ export function AIAnalysis() {
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const currentDay = new Date().getDate();
   const daysRemaining = daysInMonth - currentDay;
+
+  // ✅ Renders **bold** markdown as <strong>
+  const renderMarkdown = (text: string) => {
+    return text.split("\n").map((line, i) => {
+      const parts = line.split(/\*\*(.*?)\*\*/g);
+      return (
+        <p key={i} className={line === "" ? "mt-2" : ""}>
+          {parts.map((part, j) =>
+            j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+          )}
+        </p>
+      );
+    });
+  };
 
   const analyzeSpending = () => {
     setIsAnalyzing(true);
@@ -29,7 +42,6 @@ export function AIAnalysis() {
 
       const monthlyTotal = monthlySpending.reduce((sum, r) => sum + r.amount, 0);
 
-      // Calculate category breakdown
       const categoryTotals: Record<string, number> = {};
       monthlySpending.forEach((record) => {
         categoryTotals[record.category] = (categoryTotals[record.category] || 0) + record.amount;
@@ -43,7 +55,6 @@ export function AIAnalysis() {
         analysisText = `You haven't recorded any spending this month yet. Start tracking your expenses to get personalized insights!`;
       } else {
         const dailyAvg = monthlyTotal / currentDay;
-        const projectedMonthly = dailyAvg * daysInMonth;
         const recommendedDaily = yearlyGoal
           ? (yearlyGoal - totalSaved) / (365 - Math.floor((Date.now() - new Date(currentYear, 0, 1).getTime()) / (1000 * 60 * 60 * 24)))
           : dailyAvg * 0.8;
@@ -88,8 +99,8 @@ export function AIAnalysis() {
 
       <div className="min-h-[100px] flex items-center justify-center">
         {analysis ? (
-          <div className="w-full text-gray-600 text-sm whitespace-pre-line">
-            {analysis}
+          <div className="w-full text-gray-600 text-sm space-y-1">
+            {renderMarkdown(analysis)}
           </div>
         ) : (
           <div className="text-center text-gray-400">
