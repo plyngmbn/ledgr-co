@@ -19,11 +19,20 @@ interface SpendingFormProps {
   selectedYear: number;
 }
 
+const getReactionMessage = (amount: number, dailyAvg: number) => {
+  if (amount >= 1000) return "Ouch! 😬 That hurt the wallet";
+  if (amount >= 500) return "Big spend alert! 👀 You sure about that?";
+  if (amount >= 200) return "Not bad, not great. 😅 Stay on track!";
+  if (dailyAvg > 0 && amount < dailyAvg * 0.5) return "Slay! 💅 Under budget today";
+  return "Logged! Keep tracking bestie 🫡";
+};
+
 export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps) {
   const [date, setDate] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
+  const [reaction, setReaction] = useState<string | null>(null);
 
   const { addSpendingRecord, getSpendingForMonth, deleteSpendingRecord } = useBudget();
 
@@ -36,6 +45,11 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
   const handleSubmit = () => {
     if (!date || !category || !amount) return;
 
+    const monthlySpending = getSpendingForMonth(selectedMonth, selectedYear);
+    const dailyAvg = monthlySpending.length > 0
+      ? monthlySpending.reduce((sum, r) => sum + r.amount, 0) / new Date().getDate()
+      : 0;
+
     addSpendingRecord({
       date: parseInt(date),
       category,
@@ -44,6 +58,9 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
       month: selectedMonth,
       year: selectedYear,
     });
+
+    setReaction(getReactionMessage(parseFloat(amount), dailyAvg));
+    setTimeout(() => setReaction(null), 3000);
 
     setDate("");
     setCategory("");
@@ -136,6 +153,13 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
           <Plus className="w-4 h-4 mr-2" />
           Add Record
         </Button>
+
+        {/* Reaction message */}
+        {reaction && (
+          <div className="mt-3 text-sm font-medium text-emerald-600 animate-pulse">
+            {reaction}
+          </div>
+        )}
       </div>
 
       {/* Records Table */}
@@ -195,4 +219,3 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
     </div>
   );
 }
-
