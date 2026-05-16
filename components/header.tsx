@@ -20,26 +20,24 @@ export function Header() {
           <div className="flex items-center gap-2">
             <Link
               href="/"
-              className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm transition-colors ${
                 pathname === "/"
-                  ? "bg-[#4A9B7F] text-white"
-                  : "text-gray-600 hover:bg-[#7DC9A6] hover:text-white"
+                  ? "bg-[#4A9B7F] text-white font-bold"
+                  : "text-gray-600 font-medium hover:bg-[#7DC9A6] hover:text-white hover:font-bold"
               }`}
             >
               <LayoutGrid className="w-4 h-4" />
-              {/* Hide text on mobile, show on sm+ */}
               <span className="hidden sm:inline">Dashboard</span>
             </Link>
             <Link
               href="/records"
-              className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm transition-colors ${
                 pathname === "/records"
-                  ? "bg-[#4A9B7F] text-white"
-                  : "text-gray-600 hover:bg-[#7DC9A6] hover:text-white"
+                  ? "bg-[#4A9B7F] text-white font-bold"
+                  : "text-gray-600 font-medium hover:bg-[#7DC9A6] hover:text-white hover:font-bold"
               }`}
             >
               <PlusCircle className="w-4 h-4" />
-              {/* Hide text on mobile, show on sm+ */}
               <span className="hidden sm:inline">Add Record</span>
             </Link>
           </div>
