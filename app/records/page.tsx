@@ -40,7 +40,7 @@ export default function RecordsPage() {
       <Header />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col items-center justify-center gap-4 mb-12 text-center">
+        <div className="flex flex-col items-center justify-center gap-4 mb-12 text-center pt-4">
           <Mascot className="w-24 h-24" />
           <div>
             <h1 className="text-3xl font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">Add Records</h1>
