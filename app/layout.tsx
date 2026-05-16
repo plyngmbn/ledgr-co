@@ -10,7 +10,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 const pressStart2P = Press_Start_2P({ weight: "400", subsets: ["latin"], variable: "--font-pixel" });
 
 export const metadata: Metadata = {
-  title: 'Trackr',
+  title: 'Ledgr',
   description: 'Your friendly budget buddy to track spending and savings',
   generator: 'v0.app',
   icons: {

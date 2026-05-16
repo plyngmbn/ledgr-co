@@ -20,7 +20,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-4 mb-8">
           <Mascot className="w-14 h-14" />
           <div>
-            <h1 className="text-xl font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">Welcome to Trackr!</h1>
+            <h1 className="text-xl font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">Welcome to Ledgr!</h1>
             <p className="text-gray-500">Bestie for your broke moments</p>
           </div>
         </div>
