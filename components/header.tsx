@@ -17,14 +17,12 @@ export function Header() {
   useEffect(() => {
     setMounted(true);
 
-    // 1. Check current session on load
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
     };
     checkUser();
 
-    // 2. Listen for auth changes (Login/Logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
@@ -34,7 +32,6 @@ export function Header() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    // Use window.location to force a hard refresh and clear all states
     window.location.href = "/"; 
   };
 
@@ -59,7 +56,6 @@ export function Header() {
           </Link>
 
           <div className="flex items-center gap-4">
-            {/* Navigation Links */}
             <div className="flex items-center gap-2">
               <Link
                 href="/"
@@ -85,7 +81,6 @@ export function Header() {
               </Link>
             </div>
 
-            {/* Auth Section */}
             <div className="flex items-center pl-4 border-l border-gray-100 dark:border-gray-800 gap-3">
               {user ? (
                 <div className="flex items-center gap-3">
@@ -106,7 +101,8 @@ export function Header() {
               ) : (
                 <Button 
                   onClick={handleLogin}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs h-8 px-4 rounded-full"
+                  // UPDATED: Changed from emerald-500 to #4A9B7F to match the Dashboard button
+                  className="bg-[#4A9B7F] hover:bg-[#3d8069] text-white text-sm font-bold h-9 px-6 rounded-full transition-colors"
                 >
                   Sign In
                 </Button>
