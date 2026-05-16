@@ -142,7 +142,6 @@ export function StatCards() {
             {recommendedBudget ? formatCurrency(recommendedBudget) : "₱0.00"}
           </div>
           <div className="flex items-center gap-1 mt-1">
-             <Sparkles className="w-3 h-3 text-amber-400" />
           </div>
         </div>
       </div>
