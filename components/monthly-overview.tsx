@@ -95,7 +95,7 @@ export function MonthlyOverview() {
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-orange-300 rounded" />
-              <span>Avg/day</span>
+              <span>Average</span>
             </div>
           </div>
 
