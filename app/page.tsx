@@ -8,6 +8,7 @@ import { ExpensesByCategory } from "@/components/expenses-by-category";
 import { WeeklyOverview } from "@/components/weekly-overview";
 import { MonthlyOverview } from "@/components/monthly-overview";
 import { DailyTip } from "@/components/daily-tip";
+import { StreakCard } from "@/components/streak-card";
 
 export default function DashboardPage() {
   return (
