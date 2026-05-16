@@ -3,8 +3,16 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+  const { searchParams, origin, hash } = new URL(request.url);
+  
+  // If the URL contains an access_token (like your link above), 
+  // it means the user is actually logged in.
+  if (request.url.includes('access_token=')) {
+    return NextResponse.redirect(`${origin}/`);
+  }
+
   const code = searchParams.get('code');
+  const next = searchParams.get('next') ?? '/';
 
   if (code) {
     const cookieStore: any = cookies();
@@ -29,11 +37,10 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     
     if (!error) {
-      // FORCE REDIRECT to your live URL to bypass any origin confusion
-      return NextResponse.redirect('https://ledgr-co.vercel.app/');
+      return NextResponse.redirect(`${origin}${next}`);
     }
   }
 
-  // If there's an error, we stay on the error page
-  return NextResponse.redirect('https://ledgr-co.vercel.app/auth/auth-code-error');
+  // If we end up here, check if there's actually an error or if it's a false alarm
+  return NextResponse.redirect(`${origin}/`);
 }
