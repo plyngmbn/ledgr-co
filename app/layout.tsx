@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { BudgetProvider } from '@/lib/budget-context'
 import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
