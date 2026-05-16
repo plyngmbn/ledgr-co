@@ -29,14 +29,14 @@ export default function DashboardPage() {
         <StatCards />
 
         {/* Daily Tip */}
-<div className="mt-6">
-  <DailyTip />
-</div>
+        <div className="mt-6">
+          <DailyTip />
+        </div>
 
-{/* Streak */}
-<div className="mt-4">
-  <StreakCard />
-</div>
+        {/* Streak */}
+        <div className="mt-4">
+          <StreakCard />
+        </div>
 
         {/* AI Analysis */}
         <div className="mt-6">
@@ -54,6 +54,6 @@ export default function DashboardPage() {
           <ExpensesByCategory />
         </div>
       </main>
-    </>
+    </div>
   );
 }
