@@ -1,45 +1,62 @@
 "use client";
 
-import { useBudget } from "@/lib/budget-context";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase-client";
 import { MONTHS } from "@/lib/types";
 
+interface MonthlyStats {
+  month: string;
+  index: number;
+  spending: number;
+  savings: number;
+  avgPerDay: number;
+}
+
 export function MonthlyOverview() {
-  const { data } = useBudget();
+  const [monthlyData, setMonthlyData] = useState<MonthlyStats[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
 
-  const monthlyData = MONTHS.map((month, index) => {
-    // 1. Get all spending records for this specific month
-    const monthlySpendingRecords = data.spending.filter(
-      (r) => r.month === index && r.year === currentYear
-    );
+  useEffect(() => {
+    const fetchMonthlyStats = async () => {
+      // 1. Fetch both records and savings for the whole year
+      const [recordsRes, savingsRes] = await Promise.all([
+        supabase.from("records").select("amount, month, date").eq("year", currentYear),
+        supabase.from("savings").select("amount, month").eq("year", currentYear),
+      ]);
 
-    // 2. Calculate Total Spent
-    const spending = monthlySpendingRecords.reduce((sum, r) => sum + r.amount, 0);
+      const records = recordsRes.data || [];
+      const savingsList = savingsRes.data || [];
 
-    // 3. Find Savings
-    const savings = data.monthlySavings.find(
-      (s) => s.month === index && s.year === currentYear
-    );
+      // 2. Map across all months to build the statistics
+      const stats = MONTHS.map((month, index) => {
+        const monthRecords = records.filter((r) => r.month === index);
+        const spending = monthRecords.reduce((sum, r) => sum + r.amount, 0);
+        
+        const savingsRecord = savingsList.find((s) => s.month === index);
+        const savings = savingsRecord?.amount || 0;
 
-    /** * FIX: Calculate unique days logged for this specific month
-     * This ensures Feb/May averages are calculated by active days, not 28/31 days.
-     */
-    const uniqueDaysLogged = new Set(monthlySpendingRecords.map((r) => r.date)).size;
+        // Calculate unique days logged for this specific month
+        const uniqueDaysLogged = new Set(monthRecords.map((r) => r.date)).size;
+        const avgPerDay = uniqueDaysLogged > 0 ? spending / uniqueDaysLogged : 0;
 
-    // Use uniqueDaysLogged as the divisor instead of total days in month
-    const avgPerDay = uniqueDaysLogged > 0 ? spending / uniqueDaysLogged : 0;
+        return {
+          month,
+          index,
+          spending,
+          savings,
+          avgPerDay,
+        };
+      });
 
-    return {
-      month,
-      index,
-      spending,
-      savings: savings?.amount || 0,
-      avgPerDay,
-      uniqueDaysLogged, // Added for clarity in debugging
+      setMonthlyData(stats);
+      setLoading(false);
     };
-  });
+
+    fetchMonthlyStats();
+  }, [currentYear]);
 
   const hasData = monthlyData.some((m) => m.spending > 0 || m.savings > 0);
   
@@ -55,6 +72,8 @@ export function MonthlyOverview() {
       maximumFractionDigits: 2,
     })}`;
   };
+
+  if (loading) return <div className="p-6 text-center text-gray-400">Syncing monthly trends...</div>;
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm">
