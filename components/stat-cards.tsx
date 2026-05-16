@@ -19,6 +19,7 @@ export function StatCards() {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
   const currentDay = new Date().getDate();
+  const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const totalSpent = getTotalSpentForYear(currentYear);
   const totalSaved = getTotalSavedForYear(currentYear);
   const avgMonthly = getAvgMonthlySavings();
@@ -28,7 +29,9 @@ export function StatCards() {
   const currentMonthSpending = getSpendingForMonth(currentMonth, currentYear);
   const currentMonthSpent = currentMonthSpending.reduce((sum, r) => sum + r.amount, 0);
   const currentMonthSaved = getMonthlySavingsAmount(currentMonth, currentYear);
-  const avgDailySpentThisMonth = currentDay > 0 ? currentMonthSpent / currentDay : 0;
+
+  // Avg daily spent = total spent this month / total days in month
+  const avgDailySpentThisMonth = daysInCurrentMonth > 0 ? currentMonthSpent / daysInCurrentMonth : 0;
 
   const [recommendedBudget, setRecommendedBudget] = useState<number | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -175,7 +178,11 @@ export function StatCards() {
             <TrendingDown className="w-5 h-5 text-orange-400" />
           </div>
           <div className="text-2xl font-bold text-orange-500">{formatCurrency(avgDailySpentThisMonth)}</div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Per day this {MONTHS[currentMonth]}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {currentMonthSpent > 0
+              ? `₱${currentMonthSpent.toLocaleString("en-PH", { minimumFractionDigits: 2 })} ÷ ${daysInCurrentMonth} days`
+              : `Per day this ${MONTHS[currentMonth]}`}
+          </p>
         </div>
       </div>
     </div>
