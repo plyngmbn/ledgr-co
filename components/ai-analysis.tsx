@@ -1,23 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sparkles, RefreshCw, Target, TrendingDown, Lightbulb } from "lucide-react";
-import { useBudget } from "@/lib/budget-context";
+import { supabase } from "@/lib/supabase-client"; // Import Supabase
 
 export function AIAnalysis() {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const { data, getTotalSpentForYear, getTotalSavedForYear, getYearlyGoal } = useBudget();
+  
+  // Local state to store fetched cloud data
+  const [cloudData, setCloudData] = useState<{
+    totalSpent: number;
+    totalSaved: number;
+    yearlyGoal: number | null;
+    topCategory: [string, number] | null;
+  } | null>(null);
 
   const currentYear = new Date().getFullYear();
   const today = new Date();
   
-  // Calculate day of the year (1-365)
+  // Calculate day of the year logic
   const start = new Date(currentYear, 0, 0);
   const diff = today.getTime() - start.getTime();
   const oneDay = 1000 * 60 * 60 * 24;
   const dayOfYear = Math.floor(diff / oneDay);
   const daysRemainingInYear = 365 - dayOfYear;
+
+  // 1. Fetch data from Supabase when component mounts
+  useEffect(() => {
+    const fetchStats = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Fetch Records, Savings, and Goals in parallel
+      const [recordsRes, savingsRes, goalRes] = await Promise.all([
+        supabase.from("records").select("amount, category").eq("year", currentYear),
+        supabase.from("savings").select("amount").eq("year", currentYear),
+        supabase.from("goals").select("target_amount").eq("year", currentYear).single()
+      ]);
+
+      const records = recordsRes.data || [];
+      const totalSpent = records.reduce((sum, r) => sum + r.amount, 0);
+      const totalSaved = savingsRes.data?.reduce((sum, s) => sum + s.amount, 0) || 0;
+
+      // Find top category
+      const categoryMap: Record<string, number> = {};
+      records.forEach(r => categoryMap[r.category] = (categoryMap[r.category] || 0) + r.amount);
+      const topCat = Object.entries(categoryMap).sort((a, b) => b[1] - a[1])[0] || null;
+
+      setCloudData({
+        totalSpent,
+        totalSaved,
+        yearlyGoal: goalRes.data?.target_amount || null,
+        topCategory: topCat as [string, number] | null
+      });
+    };
+
+    fetchStats();
+  }, [currentYear]);
 
   const renderMarkdown = (text: string) => {
     return text.split("\n").map((line, i) => {
@@ -41,24 +81,12 @@ export function AIAnalysis() {
   };
 
   const analyzeSpending = () => {
+    if (!cloudData) return;
     setIsAnalyzing(true);
 
     setTimeout(() => {
-      const totalSpent = getTotalSpentForYear(currentYear);
-      const totalSaved = getTotalSavedForYear(currentYear);
-      const yearlyGoal = getYearlyGoal(currentYear);
-      
-      // Annual Category Totals
-      const categoryTotals: Record<string, number> = {};
-      data.spending
-        .filter((r) => r.year === currentYear)
-        .forEach((record) => {
-          categoryTotals[record.category] = (categoryTotals[record.category] || 0) + record.amount;
-        });
+      const { totalSpent, totalSaved, yearlyGoal, topCategory } = cloudData;
 
-      const topCategory = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
-
-      // Random Tips Pool
       const tips = [
         "Consider the **50/30/20 rule**: 50% for needs, 30% for wants, and 20% for savings.",
         "Review your **subscriptions**. Small monthly fees add up to thousands annually.",
@@ -69,7 +97,6 @@ export function AIAnalysis() {
       const randomTip = tips[Math.floor(Math.random() * tips.length)];
 
       let analysisText = `🗓️ **Annual Overview (${currentYear})**\n\n`;
-      
       analysisText += `You've spent a total of **₱${totalSpent.toLocaleString()}** this year. `;
       
       if (topCategory) {
@@ -107,16 +134,16 @@ export function AIAnalysis() {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 leading-tight">AI Annual Analysis</h2>
-            <p className="text-xs text-gray-500">Year-to-date insights</p>
+            <p className="text-xs text-gray-500">Cloud-synced insights</p>
           </div>
         </div>
         <button
           onClick={analyzeSpending}
-          disabled={isAnalyzing}
+          disabled={isAnalyzing || !cloudData}
           className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${isAnalyzing ? "animate-spin" : ""}`} />
-          Analyze
+          {isAnalyzing ? "Syncing..." : "Analyze"}
         </button>
       </div>
 
