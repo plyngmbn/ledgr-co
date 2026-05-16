@@ -5,7 +5,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { BudgetProvider } from '@/lib/budget-context'
 import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
-import Script from 'next/script' // 1. Import the Script component
+import Script from 'next/script'
+import Link from 'next/link' // Import Link for the footer
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -19,7 +20,6 @@ export const metadata: Metadata = {
     icon: '/logo.png',
     apple: '/logo.png',
   },
-  // 2. Add the AdSense verification meta tag here
   other: {
     "google-adsense-account": "ca-pub-8311594301846007",
   },
@@ -33,7 +33,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`bg-[#f8faf9] ${pressStart2P.variable}`}>
       <head>
-        {/* 3. Add the AdSense script tag here */}
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8311594301846007"
@@ -41,14 +40,22 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
       </head>
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased flex flex-col min-h-screen">
         <BudgetProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
+            <div className="flex-grow">
+              {children}
+            </div>
           </ThemeProvider>
         </BudgetProvider>
 
-        {/* 4. Cleaned up duplicate analytics tags */}
+        {/* --- ADDED FOOTER HERE --- */}
+        <footer className="w-full text-center py-8 border-t border-gray-100 dark:border-gray-800">
+          <p className="text-sm text-gray-400">
+            © 2026 Ledgr • <Link href="/privacy" className="hover:text-[#4A9B7F] underline">Privacy Policy</Link>
+          </p>
+        </footer>
+
         {process.env.NODE_ENV === 'production' && (
           <>
             <Analytics />
