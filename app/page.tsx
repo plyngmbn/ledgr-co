@@ -26,7 +26,7 @@ export default function DashboardPage() {
               Welcome to Ledgr!
             </h1>
             <p className="text-gray-500 font-medium text-lg">
-              Bestie for your broke moments
+              Bestie for your broke moments.
             </p>
           </div>
         </div>
