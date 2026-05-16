@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Target } from "lucide-react";
-import { useBudget } from "@/lib/budget-context";
+import { supabase } from "@/lib/supabase-client"; // Import the cloud client
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -12,27 +12,74 @@ interface YearlyGoalFormProps {
 
 export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
   const [amount, setAmount] = useState("");
-  const { setYearlyGoal, getYearlyGoal, getTotalSavedForYear } = useBudget();
+  const [currentGoal, setCurrentGoal] = useState<number | null>(null);
+  const [totalSaved, setTotalSaved] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  const currentGoal = getYearlyGoal(selectedYear);
-  const totalSaved = getTotalSavedForYear(selectedYear);
+  // 1. Fetch the goal and total savings from the cloud
+  const fetchGoalData = async () => {
+    // Fetch the goal
+    const { data: goalData } = await supabase
+      .from("goals")
+      .select("target_amount")
+      .eq("year", selectedYear)
+      .single();
 
-  useEffect(() => {
-    if (currentGoal !== null) {
-      setAmount(currentGoal.toString());
+    // Fetch all savings for the year to calculate progress
+    const { data: savingsData } = await supabase
+      .from("savings")
+      .select("amount")
+      .eq("year", selectedYear);
+
+    if (goalData) {
+      setCurrentGoal(goalData.target_amount);
+      setAmount(goalData.target_amount.toString());
     } else {
+      setCurrentGoal(null);
       setAmount("");
     }
-  }, [currentGoal, selectedYear]);
 
-  const handleSubmit = () => {
+    if (savingsData) {
+      const total = savingsData.reduce((sum, item) => sum + item.amount, 0);
+      setTotalSaved(total);
+    }
+  };
+
+  useEffect(() => {
+    fetchGoalData();
+  }, [selectedYear]);
+
+  // 2. The UPSERT: Save or Update the goal in Supabase
+  const handleSubmit = async () => {
     const value = parseFloat(amount);
     if (isNaN(value) || value < 0) return;
 
-    setYearlyGoal({
-      year: selectedYear,
-      amount: value,
-    });
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      alert("Please log in to sync your yearly goal!");
+      setLoading(false);
+      return;
+    }
+
+    const { error } = await supabase.from("goals").upsert(
+      {
+        year: selectedYear,
+        target_amount: value,
+        user_id: user.id,
+      },
+      { onConflict: "user_id,year" }
+    );
+
+    if (error) {
+      console.error("Error syncing goal:", error.message);
+      alert("Failed to sync goal.");
+    } else {
+      setCurrentGoal(value);
+      alert("Goal synced! 🚀");
+    }
+    setLoading(false);
   };
 
   const formatCurrency = (value: number) => {
@@ -45,10 +92,8 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
   const progress = currentGoal && currentGoal > 0 ? (totalSaved / currentGoal) * 100 : 0;
 
   return (
-    /* Changed to white background with subtle gray border to match spending card */
     <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm">
       <div className="flex items-center gap-2 mb-4">
-        {/* Changed icon color to emerald */}
         <Target className="w-5 h-5 text-emerald-500" />
         <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">
           Yearly Savings Goal - {selectedYear}
@@ -70,17 +115,14 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:ring-emerald-500"
           />
-          <p className="text-xs text-gray-500 mt-1.5">
-            This is your target savings for the entire year
-          </p>
         </div>
 
-        {/* Changed button to match emerald "Add Record" button */}
         <Button
           onClick={handleSubmit}
+          disabled={loading || !amount}
           className="w-full bg-[#6ee7b7] hover:bg-[#52d3a2] text-[#065f46] font-semibold"
         >
-          Set Goal
+          {loading ? "Syncing..." : "Set Goal"}
         </Button>
 
         {currentGoal !== null ? (
@@ -92,7 +134,6 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
               </span>
             </div>
             
-            {/* Progress bar changed to emerald/green theme */}
             <div className="h-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-full overflow-hidden">
               <div
                 className="h-full bg-emerald-400 rounded-full transition-all duration-500"
@@ -101,13 +142,13 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
             </div>
             <p className="text-xs text-gray-500 mt-2 text-center font-medium">
               {progress >= 100
-                ? "🎉 Congratulations! Goal achieved!"
+                ? "🎉 Goal achieved!"
                 : `${progress.toFixed(1)}% of your goal`}
             </p>
           </div>
         ) : (
           <p className="text-sm text-gray-500 text-center">
-            Set a yearly savings goal to track your progress
+            Set a yearly goal to start tracking progress.
           </p>
         )}
       </div>

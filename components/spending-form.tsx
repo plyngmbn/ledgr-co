@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Trash2 } from "lucide-react";
-import { useBudget } from "@/lib/budget-context";
+import { supabase } from "@/lib/supabase-client"; // Import your client
 import { CATEGORIES, MONTHS } from "@/lib/types";
 import {
   Select,
@@ -33,39 +33,71 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [reaction, setReaction] = useState<string | null>(null);
+  const [records, setRecords] = useState<any[]>([]); // Store records locally after fetch
 
-  const { addSpendingRecord, getSpendingForMonth, deleteSpendingRecord } = useBudget();
+  // 1. Fetch records from Supabase on load or when month/year changes
+  const fetchRecords = async () => {
+    const { data, error } = await supabase
+      .from("records")
+      .select("*")
+      .eq("month", selectedMonth)
+      .eq("year", selectedYear)
+      .order("date", { ascending: true });
 
-  const records = getSpendingForMonth(selectedMonth, selectedYear);
+    if (error) console.error("Error fetching:", error);
+    else setRecords(data || []);
+  };
+
+  useEffect(() => {
+    fetchRecords();
+  }, [selectedMonth, selectedYear]);
+
   const totalSpent = records.reduce((sum, r) => sum + r.amount, 0);
-
   const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  const handleSubmit = () => {
+  // 2. Handle Add Record to Supabase
+  const handleSubmit = async () => {
     if (!date || !category || !amount) return;
 
-    const monthlySpending = getSpendingForMonth(selectedMonth, selectedYear);
-    const dailyAvg = monthlySpending.length > 0
-      ? monthlySpending.reduce((sum, r) => sum + r.amount, 0) / new Date().getDate()
-      : 0;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return alert("Please log in first!");
 
-    addSpendingRecord({
-      date: parseInt(date),
-      category,
-      description,
-      amount: parseFloat(amount),
-      month: selectedMonth,
-      year: selectedYear,
-    });
+    const numAmount = parseFloat(amount);
+    const dailyAvg = records.length > 0 ? totalSpent / new Date().getDate() : 0;
 
-    setReaction(getReactionMessage(parseFloat(amount), dailyAvg));
-    setTimeout(() => setReaction(null), 3000);
+    const { error } = await supabase.from("records").insert([
+      {
+        date: parseInt(date),
+        category,
+        description,
+        amount: numAmount,
+        month: selectedMonth,
+        year: selectedYear,
+        user_id: user.id, // Links to your account
+      },
+    ]);
 
-    setDate("");
-    setCategory("");
-    setDescription("");
-    setAmount("");
+    if (error) {
+      alert("Error saving record: " + error.message);
+    } else {
+      setReaction(getReactionMessage(numAmount, dailyAvg));
+      setTimeout(() => setReaction(null), 3000);
+      
+      // Reset form and refresh list
+      setDate("");
+      setCategory("");
+      setDescription("");
+      setAmount("");
+      fetchRecords();
+    }
+  };
+
+  // 3. Handle Delete from Supabase
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("records").delete().eq("id", id);
+    if (error) alert("Could not delete record");
+    else fetchRecords();
   };
 
   const isValid = date && category && amount && parseFloat(amount) > 0;
@@ -79,15 +111,14 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
 
   return (
     <div className="space-y-6">
-      {/* Add Form */}
-      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-        <h3 className="text-base font-semibold text-gray-800 mb-4">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm">
+        <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-4">
           Add Spending Record - {MONTHS[selectedMonth]} {selectedYear}
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-600 mb-1.5">Date</label>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">Date</label>
             <Select value={date} onValueChange={setDate}>
               <SelectTrigger>
                 <SelectValue placeholder="Select day" />
@@ -103,7 +134,7 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-1.5">Category</label>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">Category</label>
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
@@ -119,9 +150,7 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-1.5">
-              Description (optional)
-            </label>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">Description (optional)</label>
             <Input
               type="text"
               placeholder="e.g., Lunch at restaurant"
@@ -132,12 +161,10 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-1.5">Amount (₱)</label>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">Amount (₱)</label>
             <Input
               type="number"
               placeholder="0.00"
-              min="0"
-              step="0.01"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
@@ -154,7 +181,6 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
           Add Record
         </Button>
 
-        {/* Reaction message */}
         {reaction && (
           <div className="mt-3 text-sm font-medium text-emerald-600 animate-pulse">
             {reaction}
@@ -162,55 +188,52 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
         )}
       </div>
 
-      {/* Records Table */}
-      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-800">
+          <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200">
             Spending Sheet - {MONTHS[selectedMonth]} {selectedYear}
           </h3>
           <div className="text-right">
-            <p className="text-xs text-gray-500">Total</p>
+            <p className="text-xs text-gray-500">Total spent so far</p>
             <p className="text-lg font-bold text-emerald-600">{formatCurrency(totalSpent)}</p>
           </div>
         </div>
 
         {records.length === 0 ? (
           <p className="text-center text-gray-400 py-8">
-            No records yet. Add your first spending record above!
+            No records found in the cloud. Add one above!
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-2 px-2 text-gray-500 font-medium">Date</th>
-                  <th className="text-left py-2 px-2 text-gray-500 font-medium">Category</th>
-                  <th className="text-left py-2 px-2 text-gray-500 font-medium">Description</th>
-                  <th className="text-right py-2 px-2 text-gray-500 font-medium">Amount</th>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <th className="text-left py-2 px-2 text-gray-500">Date</th>
+                  <th className="text-left py-2 px-2 text-gray-500">Category</th>
+                  <th className="text-left py-2 px-2 text-gray-500">Description</th>
+                  <th className="text-right py-2 px-2 text-gray-500">Amount</th>
                   <th className="w-10"></th>
                 </tr>
               </thead>
               <tbody>
-                {records
-                  .sort((a, b) => a.date - b.date)
-                  .map((record) => (
-                    <tr key={record.id} className="border-b border-gray-50 hover:bg-gray-50">
-                      <td className="py-2 px-2 text-gray-700">{record.date}</td>
-                      <td className="py-2 px-2 text-gray-700">{record.category}</td>
-                      <td className="py-2 px-2 text-gray-500">{record.description || "-"}</td>
-                      <td className="py-2 px-2 text-right text-gray-700 font-medium">
-                        {formatCurrency(record.amount)}
-                      </td>
-                      <td className="py-2 px-2">
-                        <button
-                          onClick={() => deleteSpendingRecord(record.id)}
-                          className="text-red-400 hover:text-red-600 p-1"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                {records.map((record) => (
+                  <tr key={record.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td className="py-2 px-2 text-gray-700 dark:text-gray-300">{record.date}</td>
+                    <td className="py-2 px-2 text-gray-700 dark:text-gray-300">{record.category}</td>
+                    <td className="py-2 px-2 text-gray-500">{record.description || "-"}</td>
+                    <td className="py-2 px-2 text-right text-gray-700 dark:text-gray-300 font-medium">
+                      {formatCurrency(record.amount)}
+                    </td>
+                    <td className="py-2 px-2">
+                      <button
+                        onClick={() => handleDelete(record.id)}
+                        className="text-red-400 hover:text-red-600 p-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
