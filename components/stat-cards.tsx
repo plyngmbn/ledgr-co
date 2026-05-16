@@ -41,21 +41,16 @@ export function StatCards() {
       const daysRemaining = daysInMonth - currentDay;
 
       if (monthlySpending.length === 0) {
-        // No data, suggest a reasonable default based on goal
         if (yearlyGoal) {
           const monthlyBudget = yearlyGoal / 12;
           setRecommendedBudget(Math.round(monthlyBudget / daysInMonth));
         } else {
-          setRecommendedBudget(500); // Default daily budget
+          setRecommendedBudget(500);
         }
       } else {
         const monthlyTotal = monthlySpending.reduce((sum, r) => sum + r.amount, 0);
         const dailyAvg = monthlyTotal / currentDay;
-        
-        // Recommend 20% less than current average to encourage saving
         let recommended = dailyAvg * 0.8;
-        
-        // If there's a yearly goal, factor that in
         if (yearlyGoal && totalSaved < yearlyGoal) {
           const monthsRemaining = 12 - currentMonth;
           const neededSavingsPerMonth = (yearlyGoal - totalSaved) / monthsRemaining;
@@ -63,7 +58,6 @@ export function StatCards() {
           const maxSpendPerDay = (avgIncome - neededSavingsPerMonth) / daysInMonth;
           recommended = Math.min(recommended, maxSpendPerDay);
         }
-        
         setRecommendedBudget(Math.max(Math.round(recommended), 100));
       }
       setIsAnalyzing(false);
@@ -75,7 +69,7 @@ export function StatCards() {
       {/* Total Spent */}
       <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl p-5 border border-red-100">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-gray-600">Total Spent ({currentYear})</span>
+          <span className="text-sm font-semibold text-gray-700">Total Spent ({currentYear})</span>
           <TrendingDown className="w-5 h-5 text-red-400" />
         </div>
         <div className="text-2xl font-bold text-red-500">{formatCurrency(totalSpent)}</div>
@@ -85,7 +79,7 @@ export function StatCards() {
       {/* Total Saved */}
       <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-100">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-gray-600">Total Saved ({currentYear})</span>
+          <span className="text-sm font-semibold text-gray-700">Total Saved ({currentYear})</span>
           <TrendingUp className="w-5 h-5 text-green-400" />
         </div>
         <div className="text-2xl font-bold text-green-500">{formatCurrency(totalSaved)}</div>
@@ -95,7 +89,7 @@ export function StatCards() {
       {/* Avg Monthly Savings */}
       <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-5 border border-purple-100">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-gray-600">Avg Monthly Savings</span>
+          <span className="text-sm font-semibold text-gray-700">Avg Monthly Savings</span>
           <PiggyBank className="w-5 h-5 text-purple-400" />
         </div>
         <div className="text-2xl font-bold text-purple-500">{formatCurrency(avgMonthly)}</div>
@@ -105,7 +99,7 @@ export function StatCards() {
       {/* Yearly Goal */}
       <div className="bg-gradient-to-br from-gray-50 to-slate-50 rounded-2xl p-5 border border-gray-200">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-gray-600">{currentYear} Savings Goal</span>
+          <span className="text-sm font-semibold text-gray-700">{currentYear} Savings Goal</span>
           <Target className="w-5 h-5 text-gray-400" />
         </div>
         {yearlyGoal !== null ? (
@@ -128,7 +122,7 @@ export function StatCards() {
       {/* AI Recommended Budget */}
       <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-5 border border-amber-100">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-gray-600">AI Daily Budget</span>
+          <span className="text-sm font-semibold text-gray-700">AI Daily Budget</span>
           <button
             onClick={analyzeAndRecommend}
             disabled={isAnalyzing}
