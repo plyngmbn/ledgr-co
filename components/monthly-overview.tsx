@@ -18,7 +18,7 @@ export function MonthlyOverview() {
       (s) => s.month === index && s.year === currentYear
     );
 
-    // Average daily spending for that month
+    // Total spent / total days in month
     const daysInMonth = new Date(currentYear, index + 1, 0).getDate();
     const avgPerDay = spending > 0 ? spending / daysInMonth : 0;
 
@@ -28,6 +28,7 @@ export function MonthlyOverview() {
       spending,
       savings: savings?.amount || 0,
       avgPerDay,
+      daysInMonth,
     };
   });
 
@@ -82,7 +83,9 @@ export function MonthlyOverview() {
                     <span className="text-red-500">{formatCurrency(m.spending)}</span>
                     <span className="text-emerald-500">{formatCurrency(m.savings)}</span>
                     {m.avgPerDay > 0 && (
-                      <span className="text-orange-400">~{formatCurrency(m.avgPerDay)}/day</span>
+                      <span className="text-orange-400">
+                        ~{formatCurrency(m.avgPerDay)}/day
+                      </span>
                     )}
                   </div>
                 </div>
