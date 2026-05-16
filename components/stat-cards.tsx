@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { TrendingDown, TrendingUp, Target, Sparkles, RefreshCw } from "lucide-react";
 import { useBudget } from "@/lib/budget-context";
 import { MONTHS } from "@/lib/types";
@@ -20,6 +20,7 @@ export function StatCards() {
   const currentMonth = new Date().getMonth();
   const currentDay = new Date().getDate();
   const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
   const totalSpent = getTotalSpentForYear(currentYear);
   const totalSaved = getTotalSavedForYear(currentYear);
   const avgMonthly = getAvgMonthlySavings();
@@ -30,8 +31,17 @@ export function StatCards() {
   const currentMonthSpent = currentMonthSpending.reduce((sum, r) => sum + r.amount, 0);
   const currentMonthSaved = getMonthlySavingsAmount(currentMonth, currentYear);
 
-  // Avg daily spent = total spent this month / total days in month
-  const avgDailySpentThisMonth = daysInCurrentMonth > 0 ? currentMonthSpent / daysInCurrentMonth : 0;
+  /**
+   * FIX: Calculate unique days actually logged in the current month
+   * This prevents the average from being diluted by future days or days with no activity.
+   */
+  const uniqueDaysLogged = useMemo(() => {
+    const uniqueDays = new Set(currentMonthSpending.map((r) => r.date));
+    return uniqueDays.size;
+  }, [currentMonthSpending]);
+
+  // Avg daily spent based on actual activity
+  const avgDailySpentThisMonth = uniqueDaysLogged > 0 ? currentMonthSpent / uniqueDaysLogged : 0;
 
   const [recommendedBudget, setRecommendedBudget] = useState<number | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -46,27 +56,23 @@ export function StatCards() {
   const analyzeAndRecommend = () => {
     setIsAnalyzing(true);
     setTimeout(() => {
-      const monthlySpending = data.spending.filter(
-        (r) => r.month === currentMonth && r.year === currentYear
-      );
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-      if (monthlySpending.length === 0) {
+      if (currentMonthSpending.length === 0) {
         if (yearlyGoal) {
           const monthlyBudget = yearlyGoal / 12;
-          setRecommendedBudget(Math.round(monthlyBudget / daysInMonth));
+          setRecommendedBudget(Math.round(monthlyBudget / daysInCurrentMonth));
         } else {
           setRecommendedBudget(500);
         }
       } else {
-        const monthlyTotal = monthlySpending.reduce((sum, r) => sum + r.amount, 0);
-        const dailyAvg = monthlyTotal / currentDay;
-        let recommended = dailyAvg * 0.8;
+        // Use actual daily average for recommendation
+        const dailyAvg = currentMonthSpent / uniqueDaysLogged;
+        let recommended = dailyAvg * 0.8; // Aim for 20% reduction
+
         if (yearlyGoal && totalSaved < yearlyGoal) {
           const monthsRemaining = 12 - currentMonth;
           const neededSavingsPerMonth = (yearlyGoal - totalSaved) / monthsRemaining;
           const avgIncome = avgMonthly + (totalSpent / (currentMonth + 1));
-          const maxSpendPerDay = (avgIncome - neededSavingsPerMonth) / daysInMonth;
+          const maxSpendPerDay = (avgIncome - neededSavingsPerMonth) / daysInCurrentMonth;
           recommended = Math.min(recommended, maxSpendPerDay);
         }
         setRecommendedBudget(Math.max(Math.round(recommended), 100));
@@ -178,9 +184,9 @@ export function StatCards() {
             <TrendingDown className="w-5 h-5 text-orange-400" />
           </div>
           <div className="text-2xl font-bold text-orange-500">{formatCurrency(avgDailySpentThisMonth)}</div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
             {currentMonthSpent > 0
-              ? `₱${currentMonthSpent.toLocaleString("en-PH", { minimumFractionDigits: 2 })} ÷ ${daysInCurrentMonth} days`
+              ? `₱${currentMonthSpent.toLocaleString("en-PH")} ÷ ${uniqueDaysLogged} ${uniqueDaysLogged === 1 ? 'day' : 'days'} logged`
               : `Per day this ${MONTHS[currentMonth]}`}
           </p>
         </div>
