@@ -31,14 +31,19 @@ export function DailyTip() {
   }, []);
 
   return (
-    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-2xl p-5 border border-emerald-100 dark:border-emerald-900/50 flex items-center gap-4 shadow-sm mb-6">
-      {/* BOUNCING LOGO HERE */}
-      <div className="animate-bounce">
-        <Mascot className="w-12 h-12 shrink-0" />
+    /**
+     * UNIQUE THEME: Violet/Indigo
+     * This ensures it doesn't match the Red (Spent), Green (Saved), or Orange (Daily Budget) cards.
+     */
+    <div className="bg-violet-50/50 dark:bg-violet-950/10 rounded-2xl p-5 border border-violet-100 dark:border-violet-900/30 flex items-center gap-4 shadow-sm mb-6">
+      {/* Bouncing Mascot */}
+      <div className="animate-bounce shrink-0">
+        <Mascot className="w-12 h-12" />
       </div>
+      
       <div>
-        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-1 flex items-center gap-1">
-          <Sparkles className="w-3 h-3" /> DAILY TIP
+        <p className="text-xs font-bold text-violet-600 dark:text-violet-400 mb-1 flex items-center gap-1">
+          <Sparkles className="w-3 h-3 text-violet-500" /> DAILY TIP
         </p>
         <p className="text-sm text-gray-700 dark:text-gray-200 font-medium leading-tight">
           {tip}

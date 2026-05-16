@@ -153,26 +153,45 @@ export function StatCards() {
         </div>
       </div>
 
-      {/* Monthly Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950/30 dark:to-pink-950/30 rounded-2xl p-5 border border-red-100 dark:border-red-900/50">
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Spent this {MONTHS[currentMonth]}</span>
-          <div className="text-2xl font-bold text-red-500">{formatCurrency(currentMonthSpent)}</div>
-        </div>
+{/* Current Month Stats - 3 cards below the main 4 */}
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  
+  {/* 1. Spent this month - ROSE (Unique from Yearly Red) */}
+  <div className="bg-rose-50/50 dark:bg-rose-950/10 rounded-2xl p-5 border border-rose-100 dark:border-rose-900/30">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-semibold text-rose-700 dark:text-rose-300">Spent this {MONTHS[currentMonth]}</span>
+      <TrendingDown className="w-5 h-5 text-rose-400" />
+    </div>
+    <div className="text-2xl font-bold text-rose-600">{formatCurrency(currentMonthSpent)}</div>
+    <p className="text-xs text-rose-500/70 mt-1 font-medium">Monthly total</p>
+  </div>
 
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 rounded-2xl p-5 border border-green-100 dark:border-green-900/50">
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Saved this {MONTHS[currentMonth]}</span>
-          <div className="text-2xl font-bold text-green-500">{formatCurrency(currentMonthSaved)}</div>
-        </div>
+  {/* 2. Saved this month - CYAN (Unique from Yearly Green) */}
+  <div className="bg-cyan-50/50 dark:bg-cyan-950/10 rounded-2xl p-5 border border-cyan-100 dark:border-cyan-900/30">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-semibold text-cyan-700 dark:text-cyan-300">Saved this {MONTHS[currentMonth]}</span>
+      <TrendingUp className="w-5 h-5 text-cyan-400" />
+    </div>
+    <div className="text-2xl font-bold text-cyan-600">{formatCurrency(currentMonthSaved)}</div>
+    <p className="text-xs text-cyan-500/70 mt-1 font-medium">Monthly progress</p>
+  </div>
 
-        <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 rounded-2xl p-5 border border-orange-100 dark:border-orange-900/50">
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Avg Daily Spent</span>
-          <div className="text-2xl font-bold text-orange-500">{formatCurrency(avgDailySpentThisMonth)}</div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {currentMonthSpent > 0 ? `Based on ${uniqueDaysLogged} days logged` : "No logs yet"}
-          </p>
-        </div>
+  {/* 3. Avg Daily Spent - INDIGO (Unique from AI Orange) */}
+  <div className="bg-indigo-50/50 dark:bg-indigo-950/10 rounded-2xl p-5 border border-indigo-100 dark:border-indigo-900/30">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">Avg Daily Spent</span>
+      <div className="bg-indigo-100 dark:bg-indigo-900/50 p-1 rounded-md">
+        <TrendingDown className="w-4 h-4 text-indigo-500" />
       </div>
+    </div>
+    <div className="text-2xl font-bold text-indigo-600">{formatCurrency(avgDailySpentThisMonth)}</div>
+    <p className="text-xs text-indigo-500/70 mt-1 leading-relaxed font-medium">
+      {currentMonthSpent > 0
+        ? `₱${currentMonthSpent.toLocaleString("en-PH")} ÷ ${uniqueDaysLogged} days`
+        : `Tracked daily`}
+    </p>
+  </div>
+</div>
     </div>
   );
 }
