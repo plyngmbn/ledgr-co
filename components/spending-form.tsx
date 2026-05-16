@@ -110,6 +110,7 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
               placeholder="e.g., Lunch at restaurant"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             />
           </div>
 
@@ -122,6 +123,7 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
               step="0.01"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             />
           </div>
         </div>
@@ -193,3 +195,4 @@ export function SpendingForm({ selectedMonth, selectedYear }: SpendingFormProps)
     </div>
   );
 }
+
