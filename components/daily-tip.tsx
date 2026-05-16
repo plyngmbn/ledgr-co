@@ -41,7 +41,7 @@ export function DailyTip() {
       </div>
       
       <div>
-        <p className="text-xs font-medium text-violet-600 dark:text-violet-400 mb-1 flex items-center gap-1">Daily Tip!
+        <p className="text-xs font-extrabold text-violet-600 dark:text-violet-400 mb-1 flex items-center gap-1">Daily Tip!
         </p>
         <p className="text-sm text-gray-700 dark:text-gray-200 font-medium leading-tight">
           {tip}
