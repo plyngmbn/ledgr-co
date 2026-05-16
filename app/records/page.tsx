@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // To redirect if not logged in
+import { supabase } from "@/lib/supabase-client"; 
 import { Header } from "@/components/header";
 import { Mascot } from "@/components/mascot";
 import { MonthSelector } from "@/components/month-selector";
@@ -12,6 +14,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function RecordsPage() {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if user is logged in when the page loads
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // If no user, send them to login or home
+        router.push("/"); 
+      } else {
+        setLoading(false);
+      }
+    };
+
+    checkUser();
+  }, [router]);
+
+  if (loading) return <div className="p-8 text-center">Loading your vault...</div>;
 
   return (
     <div className="min-h-screen bg-[#f8faf9] dark:bg-gray-950">
@@ -34,7 +56,7 @@ export default function RecordsPage() {
         />
 
         <Tabs defaultValue="spending" className="mt-6">
-          <TabsList className="w-full bg-emerald-50 p-1 rounded-full">
+          <TabsList className="w-full bg-emerald-50 p-1 rounded-full dark:bg-gray-900">
             <TabsTrigger
               value="spending"
               className="flex-1 rounded-full data-[state=active]:bg-white data-[state=active]:shadow-sm"
