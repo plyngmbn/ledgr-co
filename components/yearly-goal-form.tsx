@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Target } from "lucide-react";
-import { supabase } from "@/lib/supabase-client"; // Import the cloud client
+import { supabase } from "@/lib/supabase-client"; 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -16,16 +16,15 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
   const [totalSaved, setTotalSaved] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // 1. Fetch the goal and total savings from the cloud
+  // 1. Fetch data silently
   const fetchGoalData = async () => {
-    // Fetch the goal
+    // FIX: Use .maybeSingle() to avoid throwing an error if no goal is set yet
     const { data: goalData } = await supabase
       .from("goals")
       .select("target_amount")
       .eq("year", selectedYear)
-      .single();
+      .maybeSingle();
 
-    // Fetch all savings for the year to calculate progress
     const { data: savingsData } = await supabase
       .from("savings")
       .select("amount")
@@ -49,7 +48,7 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
     fetchGoalData();
   }, [selectedYear]);
 
-  // 2. The UPSERT: Save or Update the goal in Supabase
+  // 2. Silent UPSERT
   const handleSubmit = async () => {
     const value = parseFloat(amount);
     if (isNaN(value) || value < 0) return;
@@ -58,7 +57,7 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      alert("Please log in to sync your yearly goal!");
+      console.error("User not authenticated");
       setLoading(false);
       return;
     }
@@ -74,10 +73,9 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
 
     if (error) {
       console.error("Error syncing goal:", error.message);
-      alert("Failed to sync goal.");
     } else {
+      // SILENT UPDATE: Just update the UI state
       setCurrentGoal(value);
-      alert("Goal synced! 🚀");
     }
     setLoading(false);
   };
@@ -92,7 +90,7 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
   const progress = currentGoal && currentGoal > 0 ? (totalSaved / currentGoal) * 100 : 0;
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm transition-all">
       <div className="flex items-center gap-2 mb-4">
         <Target className="w-5 h-5 text-emerald-500" />
         <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">
@@ -120,7 +118,7 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
         <Button
           onClick={handleSubmit}
           disabled={loading || !amount}
-          className="w-full bg-[#6ee7b7] hover:bg-[#52d3a2] text-[#065f46] font-semibold"
+          className="w-full bg-[#6ee7b7] hover:bg-[#52d3a2] text-[#065f46] font-bold py-6 rounded-xl transition-all"
         >
           {loading ? "Syncing..." : "Set Goal"}
         </Button>
