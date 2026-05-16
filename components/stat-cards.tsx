@@ -97,23 +97,13 @@ export function StatCards() {
         </div>
 
         {/* Total Saved */}
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 rounded-2xl p-5 border border-green-100 dark:border-green-900/50">
+        <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-2xl p-5 border border-purple-100 dark:border-purple-900/50">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Total Saved ({currentYear})</span>
             <TrendingUp className="w-5 h-5 text-green-400" />
           </div>
           <div className="text-2xl font-bold text-green-500">{formatCurrency(totalSaved)}</div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This year so far</p>
-        </div>
-
-        {/* Avg Monthly Savings */}
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-2xl p-5 border border-purple-100 dark:border-purple-900/50">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Avg Monthly Savings</span>
-            <PiggyBank className="w-5 h-5 text-purple-400" />
-          </div>
-          <div className="text-2xl font-bold text-purple-500">{formatCurrency(avgMonthly)}</div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Across all months</p>
         </div>
 
         {/* Yearly Goal */}
