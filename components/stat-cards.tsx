@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingDown, TrendingUp, PiggyBank, Target, Sparkles, RefreshCw } from "lucide-react";
+import { TrendingDown, TrendingUp, Target, Sparkles, RefreshCw } from "lucide-react";
 import { useBudget } from "@/lib/budget-context";
 import { MONTHS } from "@/lib/types";
 
@@ -18,6 +18,7 @@ export function StatCards() {
 
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
+  const currentDay = new Date().getDate();
   const totalSpent = getTotalSpentForYear(currentYear);
   const totalSaved = getTotalSavedForYear(currentYear);
   const avgMonthly = getAvgMonthlySavings();
@@ -27,23 +28,7 @@ export function StatCards() {
   const currentMonthSpending = getSpendingForMonth(currentMonth, currentYear);
   const currentMonthSpent = currentMonthSpending.reduce((sum, r) => sum + r.amount, 0);
   const currentMonthSaved = getMonthlySavingsAmount(currentMonth, currentYear);
-
-  // Avg daily spent from previous months
-  const pastMonthsData = Array.from({ length: currentMonth }, (_, i) => {
-    const monthSpent = data.spending
-      .filter((r) => r.month === i && r.year === currentYear)
-      .reduce((sum, r) => sum + r.amount, 0);
-    const daysInMonth = new Date(currentYear, i + 1, 0).getDate();
-    return { monthSpent, daysInMonth };
-  }).filter((m) => m.monthSpent > 0);
-
-  const avgDailySpent = pastMonthsData.length > 0
-    ? pastMonthsData.reduce((sum, m) => sum + m.monthSpent / m.daysInMonth, 0) / pastMonthsData.length
-    : 0;
-
-  const avgMonthlySpent = pastMonthsData.length > 0
-    ? pastMonthsData.reduce((sum, m) => sum + m.monthSpent, 0) / pastMonthsData.length
-    : 0;
+  const avgDailySpentThisMonth = currentDay > 0 ? currentMonthSpent / currentDay : 0;
 
   const [recommendedBudget, setRecommendedBudget] = useState<number | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -62,7 +47,6 @@ export function StatCards() {
         (r) => r.month === currentMonth && r.year === currentYear
       );
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      const currentDay = new Date().getDate();
 
       if (monthlySpending.length === 0) {
         if (yearlyGoal) {
@@ -184,16 +168,14 @@ export function StatCards() {
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This month</p>
         </div>
 
-        {/* Avg Monthly Spent */}
+        {/* Avg Daily Spent this month */}
         <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 rounded-2xl p-5 border border-orange-100 dark:border-orange-900/50">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Avg Monthly Spent</span>
+            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Avg Daily Spent</span>
             <TrendingDown className="w-5 h-5 text-orange-400" />
           </div>
-          <div className="text-2xl font-bold text-orange-500">{formatCurrency(avgMonthlySpent)}</div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            ~{formatCurrency(avgDailySpent)}/day avg
-          </p>
+          <div className="text-2xl font-bold text-orange-500">{formatCurrency(avgDailySpentThisMonth)}</div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Per day this {MONTHS[currentMonth]}</p>
         </div>
       </div>
     </div>
