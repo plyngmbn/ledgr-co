@@ -32,6 +32,11 @@ export default function DashboardPage() {
   <DailyTip />
 </div>
 
+{/* Streak */}
+<div className="mt-4">
+  <StreakCard />
+</div>
+
         {/* AI Analysis */}
         <div className="mt-6">
           <AIAnalysis />
