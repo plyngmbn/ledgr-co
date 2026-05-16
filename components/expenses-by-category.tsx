@@ -29,12 +29,10 @@ export function ExpensesByCategory() {
   
   const currentYear = new Date().getFullYear();
   
-  // ✅ Get spending for the whole year instead of just current month
   const yearlySpending = data.spending.filter(
     (r) => r.year === currentYear
   );
   
-  // Calculate totals by category
   const categoryTotals = CATEGORIES.map((category) => {
     const total = yearlySpending
       .filter((r) => r.category === category)
@@ -53,9 +51,7 @@ export function ExpensesByCategory() {
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-      {/* ✅ Updated title to reflect whole year */}
-      <h3 className="text-lg font-semibold text-gray-800 mb-1">Expenses by Category</h3>
-      <p className="text-xs text-gray-400 mb-4">Whole year {currentYear}</p>
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Expenses by Category</h3>
       
       {categoryTotals.length === 0 ? (
         <div className="text-center py-8 text-gray-400">
@@ -108,7 +104,6 @@ export function ExpensesByCategory() {
               );
             })}
           
-          {/* Total */}
           <div className="pt-3 mt-3 border-t border-gray-100 flex items-center justify-between">
             <span className="text-sm font-medium text-gray-600">Total This Year</span>
             <span className="text-lg font-bold text-gray-800">{formatCurrency(grandTotal)}</span>
