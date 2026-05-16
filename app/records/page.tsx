@@ -44,7 +44,7 @@ export default function RecordsPage() {
           <Mascot className="w-24 h-24" />
           <div>
             <h1 className="text-3xl font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">Add Records</h1>
-            <p className="text-gray-500 font-light text-lg">Your future self said thank you, btw.</p>
+            <p className="text-gray-500 font-light text-base">Your future self said thank you, btw.</p>
           </div>
         </div>
 
