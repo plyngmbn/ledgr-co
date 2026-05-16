@@ -108,7 +108,6 @@ export function StatCards() {
             <TrendingDown className="w-5 h-5 text-red-400" />
           </div>
           <div className="text-2xl font-bold text-red-500">{formatCurrency(totalSpentYear)}</div>
-          <p className="text-xs text-red-400/70 mt-1 font-medium">This year so far</p>
         </div>
 
         {/* Total Saved - Green */}
@@ -118,7 +117,6 @@ export function StatCards() {
             <TrendingUp className="w-5 h-5 text-green-400" />
           </div>
           <div className="text-2xl font-bold text-green-500">{formatCurrency(totalSavedYear)}</div>
-          <p className="text-xs text-green-500/70 mt-1 font-medium">This year so far</p>
         </div>
 
         {/* Savings Goal - Slate */}
@@ -130,9 +128,6 @@ export function StatCards() {
           <div className="text-2xl font-bold text-slate-700 dark:text-slate-200">
             {yearlyGoal !== null ? formatCurrency(yearlyGoal) : "₱0.00"}
           </div>
-          <p className="text-xs text-slate-500/70 mt-1 font-medium">
-            {yearlyGoal && totalSavedYear < yearlyGoal ? `${formatCurrency(yearlyGoal - totalSavedYear)} to go` : "Goal tracked"}
-          </p>
         </div>
 
         {/* AI Daily Budget - Amber */}
@@ -148,7 +143,6 @@ export function StatCards() {
           </div>
           <div className="flex items-center gap-1 mt-1">
              <Sparkles className="w-3 h-3 text-amber-400" />
-             <p className="text-xs text-amber-500/70 mt-1 font-medium">AI Recommendation</p>
           </div>
         </div>
       </div>
@@ -163,7 +157,6 @@ export function StatCards() {
             <TrendingDown className="w-5 h-5 text-rose-400" />
           </div>
           <div className="text-2xl font-bold text-rose-500">{formatCurrency(currentMonthSpent)}</div>
-          <p className="text-xs text-rose-500/70 mt-1 font-medium">Monthly total</p>
         </div>
 
         {/* Saved this month - CYAN */}
@@ -173,7 +166,6 @@ export function StatCards() {
             <TrendingUp className="w-5 h-5 text-cyan-400" />
           </div>
           <div className="text-2xl font-bold text-cyan-500">{formatCurrency(currentMonthSaved)}</div>
-          <p className="text-xs text-cyan-500/70 mt-1 font-medium">Monthly progress</p>
         </div>
 
         {/* Avg Daily Spent - INDIGO */}
@@ -183,9 +175,6 @@ export function StatCards() {
             <TrendingDown className="w-5 h-5 text-indigo-400" />
           </div>
           <div className="text-2xl font-bold text-indigo-500">{formatCurrency(avgDailySpentThisMonth)}</div>
-          <p className="text-xs text-indigo-500/70 mt-1 font-medium">
-            Based on {uniqueDaysLogged} {uniqueDaysLogged === 1 ? 'day' : 'days'} logged
-          </p>
         </div>
 
       </div>
