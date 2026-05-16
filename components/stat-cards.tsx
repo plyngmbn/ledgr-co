@@ -102,8 +102,8 @@ export function StatCards() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Total Spent - Red */}
-        <div className="bg-red-50/50 dark:bg-red-950/20 rounded-2xl p-5 border border-red-100 dark:border-red-900/50 flex flex-col items-center justify-center text-center">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-red-50/50 dark:bg-red-950/20 rounded-2xl p-5 border border-red-100 dark:border-red-900/50">
+          <div className="flex items-center justify-center gap-1.5 mb-2">
             <span className="text-sm font-bold text-red-600 dark:text-red-400">Total Spent ({currentYear})</span>
             <TrendingDown className="w-5 h-5 text-red-400" />
           </div>
@@ -111,8 +111,8 @@ export function StatCards() {
         </div>
 
         {/* Total Saved - Green */}
-        <div className="bg-green-50/50 dark:bg-green-950/20 rounded-2xl p-5 border border-green-100 dark:border-green-900/50 flex flex-col items-center justify-center text-center">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-green-50/50 dark:bg-green-950/20 rounded-2xl p-5 border border-green-100 dark:border-green-900/50">
+          <div className="flex items-center justify-center gap-1.5 mb-2">
             <span className="text-sm font-bold text-green-600 dark:text-green-400">Total Saved ({currentYear})</span>
             <TrendingUp className="w-5 h-5 text-green-400" />
           </div>
@@ -120,8 +120,8 @@ export function StatCards() {
         </div>
 
         {/* Savings Goal - Slate */}
-        <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-center gap-1.5 mb-3">
             <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{currentYear} Savings Goal</span>
             <Target className="w-5 h-5 text-slate-400" />
           </div>
@@ -131,8 +131,8 @@ export function StatCards() {
         </div>
 
         {/* AI Daily Budget - Amber */}
-        <div className="bg-amber-50/50 dark:bg-amber-950/20 rounded-2xl p-5 border border-amber-100 dark:border-amber-900/50 flex flex-col items-center justify-center text-center">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-amber-50/50 dark:bg-amber-950/20 rounded-2xl p-5 border border-amber-100 dark:border-amber-900/50">
+          <div className="flex items-center justify-center gap-1.5 mb-3">
             <span className="text-sm font-bold text-amber-600 dark:text-amber-400">AI Daily Budget</span>
             <button onClick={analyzeAndRecommend} className="p-1 hover:bg-amber-100 rounded-full transition-colors">
               <RefreshCw className={`w-4 h-4 text-amber-500 ${isAnalyzing ? "animate-spin" : ""}`} />
@@ -150,8 +150,8 @@ export function StatCards() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         
         {/* Spent this month - ROSE */}
-        <div className="bg-rose-50/50 dark:bg-rose-950/10 rounded-2xl p-5 border border-rose-100 dark:border-rose-900/30 flex flex-col items-center justify-center text-center">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-rose-50/50 dark:bg-rose-950/10 rounded-2xl p-5 border border-rose-100 dark:border-rose-900/30">
+          <div className="flex items-center justify-center gap-1.5 mb-3">
             <span className="text-sm font-bold text-rose-600 dark:text-rose-400">Spent this {MONTHS[currentMonth]}</span>
             <TrendingDown className="w-5 h-5 text-rose-400" />
           </div>
@@ -159,8 +159,8 @@ export function StatCards() {
         </div>
 
         {/* Saved this month - CYAN */}
-        <div className="bg-cyan-50/50 dark:bg-cyan-950/10 rounded-2xl p-5 border border-cyan-100 dark:border-cyan-900/30 flex flex-col items-center justify-center text-center">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-cyan-50/50 dark:bg-cyan-950/10 rounded-2xl p-5 border border-cyan-100 dark:border-cyan-900/30">
+          <div className="flex items-center justify-center gap-1.5 mb-3">
             <span className="text-sm font-bold text-cyan-600 dark:text-cyan-400">Saved this {MONTHS[currentMonth]}</span>
             <TrendingUp className="w-5 h-5 text-cyan-400" />
           </div>
@@ -168,8 +168,8 @@ export function StatCards() {
         </div>
 
         {/* Avg Daily Spent - INDIGO */}
-        <div className="bg-indigo-50/50 dark:bg-indigo-950/10 rounded-2xl p-5 border border-indigo-100 dark:border-indigo-900/30 flex flex-col items-center justify-center text-center">
-          <div className="flex items-center justify-between mb-3">
+        <div className="bg-indigo-50/50 dark:bg-indigo-950/10 rounded-2xl p-5 border border-indigo-100 dark:border-indigo-900/30">
+          <div className="flex items-center justify-center gap-1.5 mb-3">
             <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">Avg Daily Spent</span>
             <TrendingDown className="w-5 h-5 text-indigo-400" />
           </div>
