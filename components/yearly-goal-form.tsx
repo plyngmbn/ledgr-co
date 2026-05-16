@@ -65,6 +65,7 @@ export function YearlyGoalForm({ selectedYear }: YearlyGoalFormProps) {
             step="1000"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             className="bg-white"
           />
           <p className="text-xs text-gray-500 mt-1.5">
