@@ -82,7 +82,7 @@ export function StatCards() {
 
       // 4. Randomized Floor
       // Instead of exactly 100, we pick a random "minimum" between 100 and 150
-      const dynamicFloor = 100 + Math.floor(Math.random() * 51);
+      const dynamicFloor = 50 + Math.floor(Math.random() * 300);
       
       setRecommendedBudget(Math.max(Math.round(finalRecommendation), dynamicFloor));
       setIsAnalyzing(false);
