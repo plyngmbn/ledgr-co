@@ -47,15 +47,6 @@ export function Header() {
               <span className="hidden sm:inline">Add Record</span>
             </Link>
 
-            {/* Dark mode toggle */}
-            {mounted && (
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </button>
-            )}
           </div>
         </div>
       </div>
