@@ -12,7 +12,7 @@ import { StreakCard } from "@/components/streak-card";
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-[#f8faf9]">
+    <div className="min-h-screen bg-[#f8faf9] dark:bg-gray-950">
       <Header />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -54,6 +54,6 @@ export default function DashboardPage() {
           <ExpensesByCategory />
         </div>
       </main>
-    </div>
+    </>
   );
 }
