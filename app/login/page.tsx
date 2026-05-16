@@ -10,17 +10,18 @@ export default function LoginPage() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
+        // This ensures Supabase sends the user to your callback handler
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
   };
 
   return (
-    <div className="min-h-screen bg-[#f8faf9] dark:bg-gray-950 flex flex-col items-center justify-center p-4">
-      {/* Background Glow */}
+    <div className="min-h-screen bg-[#f8faf9] dark:bg-gray-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Glow Effect */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-emerald-200/30 dark:bg-emerald-900/10 rounded-full blur-3xl -z-10" />
 
-      <div className="w-full max-w-[400px] space-y-8">
+      <div className="w-full max-w-[400px] space-y-8 relative z-10">
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <div className="flex justify-center mb-4">
@@ -40,8 +41,8 @@ export default function LoginPage() {
         <div className="bg-white dark:bg-gray-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 shadow-xl shadow-emerald-900/5">
           <div className="space-y-6">
             <div className="space-y-2">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Welcome Back</h2>
-              <p className="text-sm text-gray-500">Sign in to access your dashboard and records.</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 text-center sm:text-left">Welcome Back</h2>
+              <p className="text-sm text-gray-500 text-center sm:text-left">Sign in to access your dashboard and records.</p>
             </div>
 
             <Button
