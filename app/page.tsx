@@ -7,6 +7,7 @@ import { AIAnalysis } from "@/components/ai-analysis";
 import { ExpensesByCategory } from "@/components/expenses-by-category";
 import { WeeklyOverview } from "@/components/weekly-overview";
 import { MonthlyOverview } from "@/components/monthly-overview";
+import { DailyTip } from "@/components/daily-tip";
 
 export default function DashboardPage() {
   return (
@@ -25,6 +26,11 @@ export default function DashboardPage() {
 
         {/* Stats */}
         <StatCards />
+
+        {/* Daily Tip */}
+<div className="mt-6">
+  <DailyTip />
+</div>
 
         {/* AI Analysis */}
         <div className="mt-6">
