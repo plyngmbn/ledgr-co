@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Press_Start_2P } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { BudgetProvider } from '@/lib/budget-context'
 import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
@@ -46,6 +47,7 @@ export default function RootLayout({
           </ThemeProvider>
         </BudgetProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
+        <SpeedInsights />
       </body>
     </html>
   )
