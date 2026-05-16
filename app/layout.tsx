@@ -42,7 +42,7 @@ export default function RootLayout({
         <BudgetProvider>
           {children}
         </BudgetProvider>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <Analytics />
       </body>
     </html>
   )
