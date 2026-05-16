@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Lightbulb } from "lucide-react"; // Added Lightbulb
 
 const TIPS = [
   "Small savings today = big wins later. You got this! 💪",
@@ -32,17 +32,17 @@ export function DailyTip() {
   return (
     /**
      * UNIQUE THEME: Violet/Indigo
-     * This ensures it doesn't match the Red (Spent), Green (Saved), or Orange (Daily Budget) cards.
      */
     <div className="bg-violet-50/50 dark:bg-violet-950/10 rounded-2xl p-5 border border-violet-100 dark:border-violet-900/30 flex items-center gap-4 shadow-sm mb-6">
-      {/* Bouncing Mascot */}
-      <div className="animate-bounce shrink-0">
-        <Sparkles className="w-12 h-12 text-violet-500" />
+      
+      {/* Bouncing Lightbulb Logo */}
+      <div className="animate-bounce shrink-0 bg-violet-100 dark:bg-violet-900/50 p-2.5 rounded-xl">
+        <Lightbulb className="w-7 h-7 text-violet-600 dark:text-violet-400 fill-violet-200 dark:fill-violet-800" />
       </div>
       
       <div>
-        <p className="text-xs font-bold text-violet-600 dark:text-violet-400 mb-1 flex items-center gap-1">
-          <Sparkles className="w-3 h-3 text-violet-500" /> DAILY TIP
+        <p className="text-xs font-bold text-violet-600 dark:text-violet-400 mb-1 flex items-center gap-1 uppercase tracking-wider">
+          <Sparkles className="w-3 h-3 text-violet-500" /> Daily Tip
         </p>
         <p className="text-sm text-gray-700 dark:text-gray-200 font-medium leading-tight">
           {tip}
