@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Press_Start_2P } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { BudgetProvider } from '@/lib/budget-context'
 import './globals.css'
+import { ThemeProvider } from "@/components/theme-provider";
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -39,9 +40,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`bg-[#f8faf9] ${pressStart2P.variable}`}>
       <body className="font-sans antialiased">
-        <BudgetProvider>
-          {children}
-        </BudgetProvider>
+        <<BudgetProvider>
+  <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    {children}
+  </ThemeProvider>
+</BudgetProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
