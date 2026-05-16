@@ -12,9 +12,36 @@ export function StreakCard() {
     const today = new Date();
     let count = 0;
 
+    // Check if the user has logged anything at all
+    if (data.spending.length === 0) {
+      setStreak(0);
+      return;
+    }
+
+    // Step 1: Check if streak is still active (logged today or yesterday)
+    const hasLoggedToday = data.spending.some(
+      (r) => r.year === today.getFullYear() && r.month === today.getMonth() && r.date === today.getDate()
+    );
+
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const hasLoggedYesterday = data.spending.some(
+      (r) => r.year === yesterday.getFullYear() && r.month === yesterday.getMonth() && r.date === yesterday.getDate()
+    );
+
+    // If they haven't logged today AND haven't logged yesterday, streak is dead.
+    if (!hasLoggedToday && !hasLoggedYesterday) {
+      setStreak(0);
+      return;
+    }
+
+    // Step 2: Calculate the streak length
+    // We start counting from the most recent day a log existed (today or yesterday)
+    const startDay = hasLoggedToday ? today : yesterday;
+
     for (let i = 0; i < 365; i++) {
-      const checkDate = new Date(today);
-      checkDate.setDate(today.getDate() - i);
+      const checkDate = new Date(startDay);
+      checkDate.setDate(startDay.getDate() - i);
 
       const hasRecord = data.spending.some(
         (r) =>
@@ -34,14 +61,14 @@ export function StreakCard() {
   }, [data]);
 
   return (
-    <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-5 border border-orange-100 flex items-center gap-4">
-      <div className="bg-orange-100 p-3 rounded-xl">
-        <Flame className="w-6 h-6 text-orange-500" />
+    <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30 rounded-2xl p-5 border border-orange-100 dark:border-orange-900/50 flex items-center gap-4 transition-colors">
+      <div className="bg-orange-100 dark:bg-orange-900/50 p-3 rounded-xl">
+        <Flame className="w-6 h-6 text-orange-500 dark:text-orange-400" />
       </div>
       <div>
-        <p className="text-xs font-semibold text-orange-500 mb-1">Logging Streak</p>
-        <p className="text-2xl font-bold text-orange-600">{streak} {streak === 1 ? "day" : "days"} 🔥</p>
-        <p className="text-xs text-gray-500 mt-0.5">
+        <p className="text-xs font-semibold text-orange-500 dark:text-orange-400 mb-1">Logging Streak</p>
+        <p className="text-2xl font-bold text-orange-600 dark:text-orange-300">{streak} {streak === 1 ? "day" : "days"} 🔥</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
           {streak === 0
             ? "Log a record today to start your streak!"
             : streak < 3
