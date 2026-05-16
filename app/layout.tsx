@@ -5,13 +5,29 @@ import { BudgetProvider } from '@/lib/budget-context'
 import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
 
+const _geist = Geist({ subsets: ["latin"] });
+const _geistMono = Geist_Mono({ subsets: ["latin"] });
 const pressStart2P = Press_Start_2P({ weight: "400", subsets: ["latin"], variable: "--font-pixel" });
 
 export const metadata: Metadata = {
   title: 'Trackr',
   description: 'Your friendly budget buddy to track spending and savings',
+  generator: 'v0.app',
   icons: {
-    icon: '/logo.png',
+    icon: [
+      {
+        url: '/logo.png',
+        media: '(prefers-color-scheme: light)',
+      },
+      {
+        url: '/logo.png',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/logo.png',
+        type: 'image/svg+xml',
+      },
+    ],
     apple: '/logo.png',
   },
 }
@@ -22,11 +38,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    // suppressHydrationWarning is required for next-themes
-    <html lang="en" className={pressStart2P.variable} suppressHydrationWarning>
+    <html lang="en" className={`bg-[#f8faf9] ${pressStart2P.variable}`}>
       <body className="font-sans antialiased">
         <BudgetProvider>
-          {/* attribute="class" matches darkMode: 'class' in tailwind.config */}
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             {children}
           </ThemeProvider>
