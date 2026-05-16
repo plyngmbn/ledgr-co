@@ -20,7 +20,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2">
             <Mascot className="w-10 h-10" />
-            <span className="text-lg font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">Trackr</span>
+            <span className="text-lg font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">Ledgr</span>
           </Link>
 
           <div className="flex items-center gap-2">
