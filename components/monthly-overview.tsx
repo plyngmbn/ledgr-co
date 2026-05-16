@@ -10,17 +10,26 @@ export function MonthlyOverview() {
   const currentMonth = new Date().getMonth();
 
   const monthlyData = MONTHS.map((month, index) => {
-    const spending = data.spending
-      .filter((r) => r.month === index && r.year === currentYear)
-      .reduce((sum, r) => sum + r.amount, 0);
+    // 1. Get all spending records for this specific month
+    const monthlySpendingRecords = data.spending.filter(
+      (r) => r.month === index && r.year === currentYear
+    );
 
+    // 2. Calculate Total Spent
+    const spending = monthlySpendingRecords.reduce((sum, r) => sum + r.amount, 0);
+
+    // 3. Find Savings
     const savings = data.monthlySavings.find(
       (s) => s.month === index && s.year === currentYear
     );
 
-    // Total spent / total days in month
-    const daysInMonth = new Date(currentYear, index + 1, 0).getDate();
-    const avgPerDay = spending > 0 ? spending / daysInMonth : 0;
+    /** * FIX: Calculate unique days logged for this specific month
+     * This ensures Feb/May averages are calculated by active days, not 28/31 days.
+     */
+    const uniqueDaysLogged = new Set(monthlySpendingRecords.map((r) => r.date)).size;
+
+    // Use uniqueDaysLogged as the divisor instead of total days in month
+    const avgPerDay = uniqueDaysLogged > 0 ? spending / uniqueDaysLogged : 0;
 
     return {
       month,
@@ -28,11 +37,13 @@ export function MonthlyOverview() {
       spending,
       savings: savings?.amount || 0,
       avgPerDay,
-      daysInMonth,
+      uniqueDaysLogged, // Added for clarity in debugging
     };
   });
 
   const hasData = monthlyData.some((m) => m.spending > 0 || m.savings > 0);
+  
+  // Calculate max value for the progress bars
   const maxValue = Math.max(
     ...monthlyData.map((m) => Math.max(m.spending, m.savings)),
     1
@@ -70,16 +81,20 @@ export function MonthlyOverview() {
           </div>
 
           {monthlyData.map((m) => {
+            // Hide months with absolutely no activity
             if (m.spending === 0 && m.savings === 0) return null;
+            
             const isCurrentMonth = m.index === currentMonth;
+            
             return (
-              <div key={m.index} className={`space-y-1 ${isCurrentMonth ? "opacity-70" : ""}`}>
+              <div key={m.index} className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600 dark:text-gray-400 w-12">
+                  <span className="text-gray-600 dark:text-gray-400 w-12 font-medium">
                     {m.month.slice(0, 3)}
-                    {isCurrentMonth && <span className="ml-1 text-emerald-500">•</span>}
+                    {isCurrentMonth && <span className="ml-1 text-emerald-500 animate-pulse">•</span>}
                   </span>
-                  <div className="flex gap-3">
+                  
+                  <div className="flex gap-3 font-medium">
                     <span className="text-red-500">{formatCurrency(m.spending)}</span>
                     <span className="text-emerald-500">{formatCurrency(m.savings)}</span>
                     {m.avgPerDay > 0 && (
@@ -89,13 +104,16 @@ export function MonthlyOverview() {
                     )}
                   </div>
                 </div>
+
                 <div className="flex gap-1">
+                  {/* Spending Bar */}
                   <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-red-400 rounded-full transition-all duration-500"
                       style={{ width: `${(m.spending / maxValue) * 100}%` }}
                     />
                   </div>
+                  {/* Savings Bar */}
                   <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-emerald-400 rounded-full transition-all duration-500"
