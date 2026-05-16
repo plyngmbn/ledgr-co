@@ -18,26 +18,18 @@ export function MonthlyOverview() {
       (s) => s.month === index && s.year === currentYear
     );
 
+    // Average daily spending for that month
+    const daysInMonth = new Date(currentYear, index + 1, 0).getDate();
+    const avgPerDay = spending > 0 ? spending / daysInMonth : 0;
+
     return {
       month,
       index,
       spending,
       savings: savings?.amount || 0,
+      avgPerDay,
     };
   });
-
-  // Only past months (excluding current)
-  const pastMonths = monthlyData.filter(
-    (m) => m.index < currentMonth && (m.spending > 0 || m.savings > 0)
-  );
-
-  const avgSpending = pastMonths.length > 0
-    ? pastMonths.reduce((sum, m) => sum + m.spending, 0) / pastMonths.length
-    : 0;
-
-  const avgSavings = pastMonths.length > 0
-    ? pastMonths.reduce((sum, m) => sum + m.savings, 0) / pastMonths.length
-    : 0;
 
   const hasData = monthlyData.some((m) => m.spending > 0 || m.savings > 0);
   const maxValue = Math.max(
@@ -59,7 +51,8 @@ export function MonthlyOverview() {
       {!hasData ? (
         <p className="text-gray-400 text-sm">No data yet. Start by adding records!</p>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
+          {/* Legend */}
           <div className="flex items-center gap-4 text-xs text-gray-500 mb-2">
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-red-400 rounded" />
@@ -69,21 +62,28 @@ export function MonthlyOverview() {
               <div className="w-3 h-3 bg-emerald-400 rounded" />
               <span>Savings</span>
             </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-orange-300 rounded" />
+              <span>Avg/day</span>
+            </div>
           </div>
 
           {monthlyData.map((m) => {
             if (m.spending === 0 && m.savings === 0) return null;
             const isCurrentMonth = m.index === currentMonth;
             return (
-              <div key={m.index} className={`space-y-1 ${isCurrentMonth ? "opacity-60" : ""}`}>
+              <div key={m.index} className={`space-y-1 ${isCurrentMonth ? "opacity-70" : ""}`}>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-gray-600 dark:text-gray-400 w-12">
                     {m.month.slice(0, 3)}
                     {isCurrentMonth && <span className="ml-1 text-emerald-500">•</span>}
                   </span>
-                  <div className="flex gap-4">
+                  <div className="flex gap-3">
                     <span className="text-red-500">{formatCurrency(m.spending)}</span>
                     <span className="text-emerald-500">{formatCurrency(m.savings)}</span>
+                    {m.avgPerDay > 0 && (
+                      <span className="text-orange-400">~{formatCurrency(m.avgPerDay)}/day</span>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-1">
@@ -103,36 +103,6 @@ export function MonthlyOverview() {
               </div>
             );
           })}
-
-          {/* Average of previous months */}
-          {pastMonths.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-              <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
-                Avg of previous months
-              </p>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-500 dark:text-gray-400">Average</span>
-                <div className="flex gap-4">
-                  <span className="text-red-400 font-medium">{formatCurrency(avgSpending)}</span>
-                  <span className="text-emerald-400 font-medium">{formatCurrency(avgSavings)}</span>
-                </div>
-              </div>
-              <div className="flex gap-1 mt-1">
-                <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-red-300 rounded-full transition-all duration-500"
-                    style={{ width: `${(avgSpending / maxValue) * 100}%` }}
-                  />
-                </div>
-                <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-emerald-300 rounded-full transition-all duration-500"
-                    style={{ width: `${(avgSavings / maxValue) * 100}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
