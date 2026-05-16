@@ -35,11 +35,13 @@ export function Header() {
     window.location.href = "/"; 
   };
 
+  // We are keeping this function here just in case, 
+  // but the button below will now use a Link instead.
   const handleLogin = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
   };
@@ -99,13 +101,14 @@ export function Header() {
                   </button>
                 </div>
               ) : (
-                <Button 
-                  onClick={handleLogin}
-                  // UPDATED: Changed from emerald-500 to #4A9B7F to match the Dashboard button
-                  className="bg-[#4A9B7F] hover:bg-[#3d8069] text-white text-sm font-bold h-9 px-6 rounded-full transition-colors"
-                >
-                  Sign In
-                </Button>
+                /* FIX: Wrapped Button in Link to navigate to your custom login page */
+                <Link href="/login">
+                  <Button 
+                    className="bg-[#4A9B7F] hover:bg-[#3d8069] text-white text-sm font-bold h-9 px-6 rounded-full transition-colors"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
               )}
             </div>
           </div>
