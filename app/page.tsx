@@ -9,7 +9,6 @@ import { WeeklyOverview } from "@/components/weekly-overview";
 import { MonthlyOverview } from "@/components/monthly-overview";
 import { DailyTip } from "@/components/daily-tip";
 import { StreakCard } from "@/components/streak-card";
-import { BadgeCard } from "@/components/badge-card";
 
 export default function DashboardPage() {
   return (
@@ -37,11 +36,6 @@ export default function DashboardPage() {
 {/* Streak */}
 <div className="mt-4">
   <StreakCard />
-</div>
-
-{/* Badges */}
-<div className="mt-4">
-  <BadgeCard />
 </div>
 
         {/* AI Analysis */}
