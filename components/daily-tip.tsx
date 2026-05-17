@@ -36,7 +36,7 @@ export function DailyTip() {
     <div className="bg-violet-50/50 dark:bg-violet-950/10 rounded-2xl p-5 border border-violet-100 dark:border-violet-900/30 flex items-center gap-4 shadow-sm mb-6">
       
       {/* Bouncing Lightbulb Logo */}
-      <div className="animate-bounce shrink-0 bg-violet-100 dark:bg-violet-900/50 p-2.5 rounded-xl">
+      <div className="bg-violet-100 dark:bg-violet-900/50 p-2.5 rounded-xl">
         <Lightbulb className="w-7 h-7 text-violet-600 dark:text-violet-400 fill-violet-200 dark:fill-violet-800" />
       </div>
       
