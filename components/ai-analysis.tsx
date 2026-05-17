@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sparkles, RefreshCw, Target, TrendingDown, Lightbulb, BrainCircuit, Rocket } from "lucide-react";
+import { RefreshCw, BrainCircuit, Rocket, Target, ShoppingBag, Lightbulb } from "lucide-react";
 import { supabase } from "@/lib/supabase-client";
 
 export function AIAnalysis() {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
-  // State for raw data from the cloud
   const [cloudData, setCloudData] = useState<{
     totalSpent: number;
     totalSaved: number;
@@ -19,13 +18,8 @@ export function AIAnalysis() {
 
   const currentYear = new Date().getFullYear();
   const today = new Date();
-  const startOfYear = new Date(currentYear, 0, 0);
-  const diff = today.getTime() - startOfYear.getTime();
-  const oneDay = 1000 * 60 * 60 * 24;
-  const dayOfYear = Math.floor(diff / oneDay);
-  const daysRemainingInYear = 365 - dayOfYear;
+  const daysRemainingInYear = 365 - Math.floor((today.getTime() - new Date(currentYear, 0, 0).getTime()) / 86400000);
 
-  // 1. Fetch data from Supabase
   useEffect(() => {
     const fetchStats = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -41,13 +35,11 @@ export function AIAnalysis() {
       const totalSpent = records.reduce((sum, r) => sum + r.amount, 0);
       const totalSaved = savingsRes.data?.reduce((sum, s) => sum + s.amount, 0) || 0;
 
-      // Map Categories and Patterns in Descriptions
       const categoryMap: Record<string, number> = {};
       const descriptionMap: Record<string, number> = {};
 
       records.forEach(r => {
         categoryMap[r.category] = (categoryMap[r.category] || 0) + r.amount;
-        
         if (r.description) {
           const cleanDesc = r.description.toLowerCase().trim();
           descriptionMap[cleanDesc] = (descriptionMap[cleanDesc] || 0) + 1;
@@ -56,7 +48,7 @@ export function AIAnalysis() {
 
       const topCat = Object.entries(categoryMap).sort((a, b) => b[1] - a[1])[0] || null;
       const topDescs = Object.entries(descriptionMap)
-        .filter(([_, count]) => count > 1) // Only count repeated habits
+        .filter(([_, count]) => count > 1)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 3);
 
@@ -68,11 +60,9 @@ export function AIAnalysis() {
         topDescriptions: topDescs
       });
     };
-
     fetchStats();
   }, [currentYear]);
 
-  // 2. The AI Intelligence Engine
   const analyzeSpending = () => {
     if (!cloudData) return;
     setIsAnalyzing(true);
@@ -82,7 +72,7 @@ export function AIAnalysis() {
 
       let text = `### 🧠 Neural Intelligence Report\n\n`;
       
-      // HABIT DETECTION & SMART SUGGESTIONS
+      // 1. HABIT DETECTION (NOW AT THE TOP)
       if (topDescriptions.length > 0) {
         const [desc, count] = topDescriptions[0];
         text += `🕵️ **Habit Detected**: You've logged "**${desc}**" **${count} times** this year.\n`;
@@ -90,49 +80,53 @@ export function AIAnalysis() {
         if (desc.includes("coffee") || desc.includes("starbucks") || desc.includes("cafe")) {
           text += `💡 **Smart Saving**: If you swap just half of these coffee runs for home-brewed, you could potentially save **₱${(count * 75).toLocaleString()}** annually.\n\n`;
         } else if (desc.includes("grab") || desc.includes("taxi") || desc.includes("angkas")) {
-          text += `💡 **Smart Saving**: Transport costs are stacking up. Consider a "Walk Zone" for short trips or check for monthly ride-hailing subscriptions to lower the fee per trip.\n\n`;
+          text += `💡 **Smart Saving**: Transport costs are stacking up. Consider a "Walk Zone" for short trips to lower the fee per trip.\n\n`;
         } else if (desc.includes("food") || desc.includes("delivery") || desc.includes("panda") || desc.includes("grabfood")) {
-          text += `💡 **Smart Saving**: Delivery fees are a silent leak. Using "Pickup" instead of "Delivery" or meal prepping just 2 more days a week would significantly boost your balance.\n\n`;
+          text += `💡 **Smart Saving**: Delivery fees are a silent leak. Using "Pickup" instead of "Delivery" would significantly boost your balance.\n\n`;
         } else {
-          text += `💡 **Smart Saving**: Since "**${desc}**" is a frequent recurring expense, look into bulk-buying or a loyalty program to reduce the cost per use.\n\n`;
+          text += `💡 **Smart Saving**: Since "**${desc}**" is a frequent recurring expense, look into bulk-buying to reduce the cost per use.\n\n`;
         }
       }
 
-      // CATEGORY ANALYSIS
+      // 2. ANNUAL OVERVIEW
+      text += `📊 **Annual Overview**: You've spent a total of **₱${totalSpent.toLocaleString()}** this year. `;
       if (topCategory) {
-        text += `📂 **Top Category**: Your primary spending driver is **${topCategory[0]}** at **₱${topCategory[1].toLocaleString()}**. \n\n`;
+        text += `Your #1 expense category is **${topCategory[0]}**, making up **₱${topCategory[1].toLocaleString()}** of your total spending.\n\n`;
       }
 
-      // GOAL PROGRESS
+      // 3. GOAL PROGRESS
       if (yearlyGoal) {
         const progress = Math.min(Math.round((totalSaved / yearlyGoal) * 100), 100);
-        text += `🎯 **Goal Progress**: You are at **${progress}%** of your **₱${yearlyGoal.toLocaleString()}** target. `;
+        text += `🎯 **Goal Progress**: You are **${progress}%** of the way to your **₱${yearlyGoal.toLocaleString()}** goal. `;
         
         if (totalSaved < yearlyGoal) {
           const dailyRequired = (yearlyGoal - totalSaved) / daysRemainingInYear;
-          text += `To bridge the gap, aim for a daily savings of **₱${Math.round(dailyRequired).toLocaleString()}**.\n\n`;
+          text += `To hit your target, save an average of **₱${Math.round(dailyRequired).toLocaleString()}** every day.\n\n`;
+        } else {
+          text += `🎊 **Legendary!** You've already hit your yearly goal. Anything saved now is pure bonus!\n\n`;
         }
+      } else {
+        text += `📌 **Tip**: Set a **Yearly Goal** in the Records tab so I can give you more accurate tracking!\n\n`;
       }
 
-      text += `✨ **AI Verdict**: Your spending is driven by recurring habits. Tightening these small loops will have the biggest impact on your wealth build this year.`;
+      text += `✨ **AI Verdict**: Your spending is driven by recurring habits. Tightening these small loops will have the biggest impact on your wealth build.`;
 
       setAnalysis(text);
       setIsAnalyzing(false);
-    }, 2000);
+    }, 1800);
   };
 
-  // 3. Helper to render the report with styling
   const renderRichText = (text: string) => {
     return text.split("\n").map((line, i) => {
       if (line.startsWith("### ")) return <h3 key={i} className="text-emerald-500 font-bold text-lg mb-4">{line.replace("### ", "")}</h3>;
       
       const parts = line.split(/\*\*(.*?)\*\*/g);
       return (
-        <p key={i} className={line === "" ? "h-2" : "flex items-start gap-2 mb-2 text-gray-600 dark:text-gray-400 text-sm"}>
+        <div key={i} className={line === "" ? "h-2" : "flex items-start gap-2 mb-2 text-gray-600 dark:text-gray-400 text-sm leading-relaxed"}>
           <span>
             {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-gray-900 dark:text-gray-100 font-bold">{part}</strong> : part)}
           </span>
-        </p>
+        </div>
       );
     });
   };
@@ -145,17 +139,17 @@ export function AIAnalysis() {
             <BrainCircuit className="w-6 h-6 text-emerald-500" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Financial Intelligence</h2>
-            <p className="text-xs text-gray-500 font-medium">Cloud-synced pattern recognition</p>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">AI Intelligence</h2>
+            <p className="text-xs text-gray-500 font-medium tracking-tight">Pattern recognition active</p>
           </div>
         </div>
         <button
           onClick={analyzeSpending}
           disabled={isAnalyzing || !cloudData}
-          className="flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-emerald-500 text-white dark:text-black rounded-2xl text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-emerald-500 text-white dark:text-black rounded-2xl text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-50 shadow-lg shadow-emerald-500/10"
         >
           <RefreshCw className={`w-4 h-4 ${isAnalyzing ? "animate-spin" : ""}`} />
-          {isAnalyzing ? "Processing..." : "Generate Insights"}
+          {isAnalyzing ? "Scanning..." : "Analyze Patterns"}
         </button>
       </div>
 
@@ -166,9 +160,13 @@ export function AIAnalysis() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-10 text-center">
-            <Rocket className="w-10 h-10 text-gray-300 mb-4 opacity-50" />
-            <p className="text-gray-500 text-sm max-w-sm">
-              I'm ready to scan your data for patterns and habits. Click generate to start the neural analysis.
+             <div className="flex gap-4 mb-4 opacity-20">
+               <ShoppingBag className="w-8 h-8" />
+               <Target className="w-8 h-8" />
+               <Lightbulb className="w-8 h-8" />
+            </div>
+            <p className="text-gray-500 text-sm max-w-xs mx-auto italic">
+              Ready to find the "leaks"? Tap analyze to scan your descriptions for recurring habits.
             </p>
           </div>
         )}
