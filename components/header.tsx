@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, PlusCircle, LogOut, User as UserIcon } from "lucide-react";
+import { LayoutGrid, Book, LogOut, User as UserIcon } from "lucide-react";
 import { Mascot } from "./mascot";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase-client";
@@ -78,7 +78,7 @@ export function Header() {
                     : "text-gray-600 dark:text-gray-300 font-medium hover:bg-[#7DC9A6] hover:text-white hover:font-bold"
                 }`}
               >
-                <PlusCircle className="w-4 h-4" />
+                <Book className="w-4 h-4" />
                 <span className="hidden sm:inline">Records</span>
               </Link>
             </div>

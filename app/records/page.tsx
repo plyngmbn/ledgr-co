@@ -52,7 +52,7 @@ export default function RecordsPage() {
 
           <div>
             <h1 className="text-3xl font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">
-              Add Records
+              Add your records here!
             </h1>
             <p className="text-gray-500 font-medium text-base">
               Log it now, cry about it later.
