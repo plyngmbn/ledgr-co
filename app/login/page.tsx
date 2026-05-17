@@ -65,7 +65,7 @@ export default function LoginPage() {
             <div className="pt-6 space-y-4 border-t border-gray-50 dark:border-gray-800">
               <div className="flex items-center gap-3 text-xs text-gray-500">
                 <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                <span>Secure Cloud Storage via Supabase</span>
+                <span>Track your finances</span>
               </div>
               <div className="flex items-center gap-3 text-xs text-gray-500">
                 <Zap className="w-4 h-4 text-emerald-500" />
