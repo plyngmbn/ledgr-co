@@ -1,32 +1,40 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { RefreshCw, BrainCircuit, Rocket, Target, ShoppingBag, Lightbulb } from "lucide-react";
-import { supabase } from "@/lib/supabase-client";
+import { Sparkles, RefreshCw, Target, TrendingDown, Lightbulb } from "lucide-react";
+import { supabase } from "@/lib/supabase-client"; // Import Supabase
 
 export function AIAnalysis() {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
+  // Local state to store fetched cloud data
   const [cloudData, setCloudData] = useState<{
     totalSpent: number;
     totalSaved: number;
     yearlyGoal: number | null;
     topCategory: [string, number] | null;
-    topDescriptions: [string, number][];
   } | null>(null);
 
   const currentYear = new Date().getFullYear();
   const today = new Date();
-  const daysRemainingInYear = 365 - Math.floor((today.getTime() - new Date(currentYear, 0, 0).getTime()) / 86400000);
+  
+  // Calculate day of the year logic
+  const start = new Date(currentYear, 0, 0);
+  const diff = today.getTime() - start.getTime();
+  const oneDay = 1000 * 60 * 60 * 24;
+  const dayOfYear = Math.floor(diff / oneDay);
+  const daysRemainingInYear = 365 - dayOfYear;
 
+  // 1. Fetch data from Supabase when component mounts
   useEffect(() => {
     const fetchStats = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Fetch Records, Savings, and Goals in parallel
       const [recordsRes, savingsRes, goalRes] = await Promise.all([
-        supabase.from("records").select("amount, category, description").eq("year", currentYear),
+        supabase.from("records").select("amount, category").eq("year", currentYear),
         supabase.from("savings").select("amount").eq("year", currentYear),
         supabase.from("goals").select("target_amount").eq("year", currentYear).single()
       ]);
@@ -35,138 +43,124 @@ export function AIAnalysis() {
       const totalSpent = records.reduce((sum, r) => sum + r.amount, 0);
       const totalSaved = savingsRes.data?.reduce((sum, s) => sum + s.amount, 0) || 0;
 
+      // Find top category
       const categoryMap: Record<string, number> = {};
-      const descriptionMap: Record<string, number> = {};
-
-      records.forEach(r => {
-        categoryMap[r.category] = (categoryMap[r.category] || 0) + r.amount;
-        if (r.description) {
-          const cleanDesc = r.description.toLowerCase().trim();
-          descriptionMap[cleanDesc] = (descriptionMap[cleanDesc] || 0) + 1;
-        }
-      });
-
+      records.forEach(r => categoryMap[r.category] = (categoryMap[r.category] || 0) + r.amount);
       const topCat = Object.entries(categoryMap).sort((a, b) => b[1] - a[1])[0] || null;
-      const topDescs = Object.entries(descriptionMap)
-        .filter(([_, count]) => count > 1)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3);
 
       setCloudData({
         totalSpent,
         totalSaved,
         yearlyGoal: goalRes.data?.target_amount || null,
-        topCategory: topCat as [string, number] | null,
-        topDescriptions: topDescs
+        topCategory: topCat as [string, number] | null
       });
     };
+
     fetchStats();
   }, [currentYear]);
+
+  const renderMarkdown = (text: string) => {
+    return text.split("\n").map((line, i) => {
+      const parts = line.split(/\*\*(.*?)\*\*/g);
+      return (
+        <p key={i} className={line === "" ? "h-2" : "flex items-start gap-2 mb-1"}>
+          <span>
+          {parts.map((part, j) =>
+            j % 2 === 1 ? (
+              <strong key={j} className="text-gray-900 dark:text-gray-100 font-bold">
+                {part}
+              </strong>
+            ) : (
+              part
+            )
+          )}
+          </span>
+        </p>
+      );
+    });
+  };
 
   const analyzeSpending = () => {
     if (!cloudData) return;
     setIsAnalyzing(true);
 
     setTimeout(() => {
-      const { totalSpent, totalSaved, yearlyGoal, topCategory, topDescriptions } = cloudData;
+      const { totalSpent, totalSaved, yearlyGoal, topCategory } = cloudData;
 
-      let text = `### 🧠 Neural Intelligence Report\n\n`;
+      const tips = [
+        "Consider the **50/30/20 rule**: 50% for needs, 30% for wants, and 20% for savings.",
+        "Review your **subscriptions**. Small monthly fees add up to thousands annually.",
+        "Try a **'No-Spend Weekend'** once a month to boost your annual savings rate.",
+        "Before an impulse buy, wait **48 hours**. If you still want it, then consider it.",
+        "Automate your savings. If the money is gone before you see it, you won't spend it."
+      ];
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+
+      let analysisText = `🗓️ **Annual Overview (${currentYear})**\n\n`;
+      analysisText += `You've spent a total of **₱${totalSpent.toLocaleString()}** this year. `;
       
-      // 1. HABIT DETECTION (NOW AT THE TOP)
-      if (topDescriptions.length > 0) {
-        const [desc, count] = topDescriptions[0];
-        text += `🕵️ **Habit Detected**: You've logged "**${desc}**" **${count} times** this year.\n`;
-        
-        if (desc.includes("coffee") || desc.includes("starbucks") || desc.includes("cafe")) {
-          text += `💡 **Smart Saving**: If you swap just half of these coffee runs for home-brewed, you could potentially save **₱${(count * 75).toLocaleString()}** annually.\n\n`;
-        } else if (desc.includes("grab") || desc.includes("taxi") || desc.includes("angkas")) {
-          text += `💡 **Smart Saving**: Transport costs are stacking up. Consider a "Walk Zone" for short trips to lower the fee per trip.\n\n`;
-        } else if (desc.includes("food") || desc.includes("delivery") || desc.includes("panda") || desc.includes("grabfood")) {
-          text += `💡 **Smart Saving**: Delivery fees are a silent leak. Using "Pickup" instead of "Delivery" would significantly boost your balance.\n\n`;
-        } else {
-          text += `💡 **Smart Saving**: Since "**${desc}**" is a frequent recurring expense, look into bulk-buying to reduce the cost per use.\n\n`;
-        }
-      }
-
-      // 2. ANNUAL OVERVIEW
-      text += `📊 **Annual Overview**: You've spent a total of **₱${totalSpent.toLocaleString()}** this year. `;
       if (topCategory) {
-        text += `Your #1 expense category is **${topCategory[0]}**, making up **₱${topCategory[1].toLocaleString()}** of your total spending.\n\n`;
+        analysisText += `Your #1 expense is **${topCategory[0]}**, making up **₱${topCategory[1].toLocaleString()}** of your total spending.\n\n`;
       }
 
-      // 3. GOAL PROGRESS
       if (yearlyGoal) {
-        const progress = Math.min(Math.round((totalSaved / yearlyGoal) * 100), 100);
-        text += `🎯 **Goal Progress**: You are **${progress}%** of the way to your **₱${yearlyGoal.toLocaleString()}** goal. `;
-        
+        const percentReached = Math.min(Math.round((totalSaved / yearlyGoal) * 100), 100);
+        analysisText += `🎯 **Goal Progress**: You are **${percentReached}%** of the way to your **₱${yearlyGoal.toLocaleString()}** goal.\n\n`;
+
         if (totalSaved < yearlyGoal) {
-          const dailyRequired = (yearlyGoal - totalSaved) / daysRemainingInYear;
-          text += `To hit your target, save an average of **₱${Math.round(dailyRequired).toLocaleString()}** every day.\n\n`;
+          const remainingToSave = yearlyGoal - totalSaved;
+          const dailyRequired = remainingToSave / daysRemainingInYear;
+          analysisText += `💡 **Recommendation**: To hit your target, you need to save an average of **₱${Math.round(dailyRequired).toLocaleString()}** every day for the remaining ${daysRemainingInYear} days of the year.\n\n`;
         } else {
-          text += `🎊 **Legendary!** You've already hit your yearly goal. Anything saved now is pure bonus!\n\n`;
+          analysisText += `🎊 **Legendary!** You've already hit your yearly goal. Anything saved now is pure bonus! \n\n`;
         }
       } else {
-        text += `📌 **Tip**: Set a **Yearly Goal** in the Records tab so I can give you more accurate tracking!\n\n`;
+        analysisText += `📌 **Tip**: Set a **Yearly Goal** in the Records tab so I can give you more accurate tracking!\n\n`;
       }
 
-      text += `✨ **AI Verdict**: Your spending is driven by recurring habits. Tightening these small loops will have the biggest impact on your wealth build.`;
+      analysisText += `✨ **Pro Tip**: ${randomTip}`;
 
-      setAnalysis(text);
+      setAnalysis(analysisText);
       setIsAnalyzing(false);
-    }, 1800);
-  };
-
-  const renderRichText = (text: string) => {
-    return text.split("\n").map((line, i) => {
-      if (line.startsWith("### ")) return <h3 key={i} className="text-emerald-500 font-bold text-lg mb-4">{line.replace("### ", "")}</h3>;
-      
-      const parts = line.split(/\*\*(.*?)\*\*/g);
-      return (
-        <div key={i} className={line === "" ? "h-2" : "flex items-start gap-2 mb-2 text-gray-600 dark:text-gray-400 text-sm leading-relaxed"}>
-          <span>
-            {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-gray-900 dark:text-gray-100 font-bold">{part}</strong> : part)}
-          </span>
-        </div>
-      );
-    });
+    }, 1500);
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 border border-gray-100 dark:border-gray-800 shadow-xl transition-all">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl">
-            <BrainCircuit className="w-6 h-6 text-emerald-500" />
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm transition-all">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg">
+            <Sparkles className="w-5 h-5 text-emerald-500" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">AI Intelligence</h2>
-            <p className="text-xs text-gray-500 font-medium tracking-tight">Pattern recognition active</p>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 leading-tight">AI Annual Analysis</h2>
+            <p className="text-xs text-gray-500">Cloud-synced insights</p>
           </div>
         </div>
         <button
           onClick={analyzeSpending}
           disabled={isAnalyzing || !cloudData}
-          className="flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-emerald-500 text-white dark:text-black rounded-2xl text-sm font-bold transition-all hover:scale-105 active:scale-95 disabled:opacity-50 shadow-lg shadow-emerald-500/10"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${isAnalyzing ? "animate-spin" : ""}`} />
-          {isAnalyzing ? "Scanning..." : "Analyze Patterns"}
+          {isAnalyzing ? "Syncing..." : "Analyze"}
         </button>
       </div>
 
-      <div className="min-h-[160px] bg-gray-50/50 dark:bg-gray-950/50 rounded-2xl p-6 border border-dashed border-gray-200 dark:border-gray-800">
+      <div className="min-h-[120px]">
         {analysis ? (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-            {renderRichText(analysis)}
+          <div className="w-full text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+            {renderMarkdown(analysis)}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-10 text-center">
-             <div className="flex gap-4 mb-4 opacity-20">
-               <ShoppingBag className="w-8 h-8" />
-               <Target className="w-8 h-8" />
-               <Lightbulb className="w-8 h-8" />
+          <div className="text-center py-4 text-gray-400 dark:text-gray-600">
+            <div className="flex justify-center gap-4 mb-4">
+               <Target className="w-8 h-8 opacity-20" />
+               <TrendingDown className="w-8 h-8 opacity-20" />
+               <Lightbulb className="w-8 h-8 opacity-20" />
             </div>
-            <p className="text-gray-500 text-sm max-w-xs mx-auto italic">
-              Ready to find the "leaks"? Tap analyze to scan your descriptions for recurring habits.
+            <p className="text-sm max-w-xs mx-auto">
+              Ready for the big picture? Let&apos;s see how your {currentYear} spending compares to your goals.
             </p>
           </div>
         )}
