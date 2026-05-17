@@ -49,7 +49,7 @@ export default function LoginPage() {
         <div className="bg-white dark:bg-gray-900 p-8 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 shadow-xl shadow-emerald-900/5">
           <div className="space-y-6">
             <div className="space-y-2">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 text-center sm:text-left">Welcome Back!</h2>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 text-center sm:text-center">Welcome Back!</h2>
               <p className="text-sm text-gray-500 text-center sm:text-left">Sign in to access your dashboard and records.</p>
             </div>
 
