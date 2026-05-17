@@ -15,12 +15,17 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#f8faf9] dark:bg-gray-950">
       <Header />
 
-      {/* FIXED: Added missing <main> tag and centered content structure */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Welcome Section - Centered */}
+        {/* Welcome Section - Centered with Bouncing Mascot */}
         <div className="flex flex-col items-center justify-center gap-4 mb-12 text-center pt-4">
-          <Mascot className="w-24 h-24" /> 
+          
+          {/* BOUNCING WRAPPER START */}
+          <div className="animate-soft-bounce">
+            <Mascot className="w-24 h-24" /> 
+          </div>
+          {/* BOUNCING WRAPPER END */}
+
           <div>
             <h1 className="text-3xl font-bold text-[#4A9B7F] font-[family-name:var(--font-pixel)]">
               Welcome to Ledgr!
