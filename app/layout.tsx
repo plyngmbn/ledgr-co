@@ -52,7 +52,7 @@ export default function RootLayout({
         {/* --- ADDED FOOTER HERE --- */}
         <footer className="w-full text-center py-8 bg-[#f8faf9] dark:bg-gray-950">
           <p className="text-sm text-gray-400">
-            © 2026 Ledgr • <Link href="/privacy" className="hover:text-[#4A9B7F] underline">Privacy Policy</Link>
+            © 2026 Ledgr
           </p>
         </footer>
 
